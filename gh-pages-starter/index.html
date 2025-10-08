@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Il mio sito di appunti</title>
+  <meta name="description" content="Appunti, esercizi e risorse di statistica." />
+  <link rel="stylesheet" href="/assets/css/styles.css" />
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" />
+  <!-- PrismJS per evidenziare il codice -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/themes/prism.min.css" />
+  <script defer src="https://cdn.jsdelivr.net/npm/prismjs/prism.min.js"></script>
+  <!-- MathJax per formule -->
+  <script>
+    window.MathJax = { tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] } };
+  </script>
+  <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <h1>Il mio sito di appunti</h1>
+    <nav class="site-nav">
+      <a href="/">Home</a>
+      <a href="/pages/lezioni.html">Lezioni</a>
+      <a href="/pages/about.html">Chi sono</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <aside class="sidebar">
+      <h2>Indice</h2>
+      <ul>
+        <li><a href="/pages/lezioni.html#descrittiva">Statistica descrittiva</a></li>
+        <li><a href="/pages/lezioni.html#probabilita">Probabilità</a></li>
+        <li><a href="/pages/lezioni.html#inferenza">Inferenza</a></li>
+      </ul>
+    </aside>
+
+    <section class="content">
+      <h2>Benvenutə 👋</h2>
+      <p>Qui raccolgo appunti, esempi di codice e formule. Esempio di formula: $\bar x = \frac{1}{n}\sum_{i=1}^n x_i$.</p>
+
+      <h3>Esempio di codice</h3>
+      <pre><code class="language-python">import numpy as np
+x = np.array([1,2,3,4,5])
+mu = x.mean()
+print(mu)</code></pre>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© 2025 • Pubblicato con GitHub Pages</p>
+  </footer>
+
+  <script src="/assets/js/main.js" defer></script>
+</body>
+</html>
