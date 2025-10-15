@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="it">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -26,8 +26,16 @@
       .nowrap { white-space: nowrap; }
       .muted { color: #5f6b7a; font-size: 0.95rem; }
       .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background:#f5f7fb; border:1px solid #e1e4ea; border-radius:6px; padding: 0 6px; }
-      .sql { margin-top: 8px; }
-      .sql code { display: block; white-space: pre-wrap; background:#f8fafc; border:1px solid #e1e4ea; border-radius:8px; padding:8px 10px; }
+
+      /* Helpers per la sezione Caesar */
+      .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; font-family:inherit; }
+      .btn.primary { background:#111827; color:#fff; border:1px solid #111827; }
+      .btn.secondary { background:#fff; color:#111827; border:1px solid #e1e4ea; }
+      .panel { background:#fff; border:1px solid #e1e4ea; border-radius:10px; padding:12px; }
+      .stack { display:grid; gap:12px; }
+      .stack.twin { grid-template-columns: 1fr 1fr; }
+      @media (max-width: 800px){ .stack.twin { grid-template-columns: 1fr; } }
+      .hint { padding:10px 12px; border:1px dashed #e1e4ea; border-radius:10px; background:#fcfcff; }
     </style>
   </head>
   <body>
@@ -40,27 +48,27 @@
       <h2 class="question-title">What is a dataset?</h2>
       <p>
         A dataset is a structured and organized collection of data, usually arranged in rows (observations) and columns (variables).
-It represents the foundation of any statistical analysis: without data, no descriptive, inferential, or predictive methods can be applied.
-In cybersecurity, datasets often contain logs, access events, authentication attempts, malware detections, or system alerts.
-Each record is a measurable event, such as a device generating an action at a specific timestamp.
-This structure allows for quantitative analysis through measures like frequencies, averages, and proportions.
-It also enables pattern detection, anomaly identification, and trend monitoring.
-By organizing raw information, statistical tools can extract meaningful insights.
-A dataset makes complex systems analyzable and measurable.
-
+        It represents the foundation of any statistical analysis: without data, no descriptive, inferential, or predictive methods can be applied.
+        In cybersecurity, datasets often contain logs, access events, authentication attempts, malware detections, or system alerts.
+        Each record is a measurable event, such as a device generating an action at a specific timestamp.
+        This structure allows for quantitative analysis through measures like frequencies, averages, and proportions.
+        It also enables pattern detection, anomaly identification, and trend monitoring.
+        By organizing raw information, statistical tools can extract meaningful insights.
+        A dataset makes complex systems analyzable and measurable.
       </p>
 
       <h2 class="question-title">What is a distribution?</h2>
       <p>
-       A distribution describes how the values of a variable are spread across their possible outcomes.
-It shows how often each value or category occurs in a dataset, revealing concentration, variability, and rare events.
-From a statistical perspective, analyzing distributions is a fundamental first step to understanding any data source.
-It provides insight into structure, balance, and anomalies that may require further investigation.
-Distributions can be represented through frequency tables, bar charts, or mathematical models.
-Statistical models like normal, Poisson, or exponential distributions help describe patterns more precisely.
-By examining their shape, it is possible to detect unusual behaviors early.Understanding distributions means transforming raw data into structured knowledge.
-This step is essential to detect irregularities, strengthen defenses, and make data-driven security decisions.
+        A distribution describes how the values of a variable are spread across their possible outcomes.
+        It shows how often each value or category occurs in a dataset, revealing concentration, variability, and rare events.
+        From a statistical perspective, analyzing distributions is a fundamental first step to understanding any data source.
+        It provides insight into structure, balance, and anomalies that may require further investigation.
+        Distributions can be represented through frequency tables, bar charts, or mathematical models.
+        Statistical models like normal, Poisson, or exponential distributions help describe patterns more precisely.
+        By examining their shape, it is possible to detect unusual behaviors early. Understanding distributions means transforming raw data into structured knowledge.
+        This step is essential to detect irregularities, strengthen defenses, and make data-driven security decisions.
       </p>
+
       <h2 class="section-title">Practice example: security logs and distributions</h2>
       <p>
         We build a small dataset of <em>security logs</em> (8 rows) with three variables:
@@ -68,7 +76,7 @@ This step is essential to detect irregularities, strengthen defenses, and make d
         then the <strong>univariate distributions</strong> (value and frequency for each variable),
         and finally a compact <strong>bivariate distribution</strong> to see how two attributes co-occur.
       </p>
-      <!-- SQL & images -->
+
       <h2 class="section-title">Database SQL: creation and population</h2>
       <p class="muted">
         Schema and insert statements that generate the dataset. On the left the <span class="kbd">CREATE TABLE</span>,
@@ -85,8 +93,7 @@ This step is essential to detect irregularities, strengthen defenses, and make d
         </figure>
       </div>
 
-      <!-- Dataset -->
-      <h2 class="section-title">Dataset </h2>
+      <h2 class="section-title">Dataset</h2>
       <table class="datatable">
         <thead>
           <tr>
@@ -107,10 +114,8 @@ This step is essential to detect irregularities, strengthen defenses, and make d
         </tbody>
       </table>
 
-      <!-- Univariate distributions -->
       <h2 class="section-title">Univariate distributions (value and frequency)</h2>
       <div class="tables tri">
-        <!-- action -->
         <section>
           <h3>By <code>action</code></h3>
           <table class="datatable">
@@ -128,7 +133,6 @@ ORDER BY frequency DESC;</code></div>
           <p class="muted">This distribution shows how many events fall in each <em>action</em> category.</p>
         </section>
 
-        <!-- device_id -->
         <section>
           <h3>By <code>device_id</code></h3>
           <table class="datatable">
@@ -146,7 +150,6 @@ ORDER BY frequency DESC;</code></div>
           <p class="muted">This distribution shows how events are distributed across devices.</p>
         </section>
 
-        <!-- date -->
         <section>
           <h3>By <code>date</code> (YYYY-MM-DD)</h3>
           <table class="datatable">
@@ -159,15 +162,12 @@ ORDER BY frequency DESC;</code></div>
           </table>
           <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS value, COUNT(*) AS frequency
 FROM events
-GROUP BY value;
-</code></div>
+GROUP BY value;</code></div>
           <p class="muted">This distribution reveals the daily pattern of activity over time.</p>
         </section>
       </div>
 
-      <!-- Bivariate distributions -->
       <h2 class="section-title">Bivariate distributions</h2>
-
       <section style="margin-bottom: 24px;">
         <h3><code>device_id × action</code></h3>
         <table class="datatable">
@@ -245,11 +245,87 @@ ORDER BY device_id, date;</code></div>
         <p class="muted">This shows the activity of each device distributed over different dates.</p>
       </section>
 
-      <a class="button" href="../../index.html">⬅ Back to Home</a>
+      <!-- ==================== Caesar cipher (analisi, cifratura, crack) ==================== -->
+      <hr style="margin: 36px 0 16px;" />
+      <h2 class="question-title">Caesar cipher — distribuzione, cifratura e decrypt via frequency analysis</h2>
+      <div class="hint">
+        Il <strong>Cifrario di Cesare</strong> trasla ogni lettera di <em>k</em> posizioni (mod 26). Con k=3:
+        <span class="kbd">A→D</span>, <span class="kbd">B→E</span>, …, <span class="kbd">Z→C</span>.
+        Qui: (1) analizziamo la <em>distribuzione</em> del testo (solo A–Z), (2) applichiamo la cifratura, (3) facciamo
+        <em>decrypt automatico</em> stimando lo shift con un test <em>chi-quadrato</em> rispetto a frequenze italiane.
+      </div>
+
+      <div class="panel stack" id="caesar-app">
+        <form id="caesar-form" onsubmit="return false;" class="stack">
+          <label class="stack">
+            <span class="section-title" style="font-size:1.1rem;">Testo in chiaro (plaintext)</span>
+            <textarea id="plain-input" rows="6" placeholder="Incolla il testo da analizzare/cifrare..."></textarea>
+          </label>
+
+          <div class="stack twin">
+            <label class="stack">
+              <span style="font-weight:600;">Chiave k</span>
+              <input id="shift-input" type="number" min="-1000" max="1000" value="3" />
+            </label>
+            <label class="stack">
+              <span style="font-weight:600;">Testo cifrato (puoi incollare qui un ciphertext da crackare)</span>
+              <textarea id="cipher-input" rows="3" placeholder="Questo campo viene riempito dal bottone Cifra; puoi anche incollarci un ciphertext esterno."></textarea>
+            </label>
+          </div>
+
+          <div class="stack twin">
+            <button id="analyze-btn" type="button" class="btn secondary">📊 Analizza distribuzione (plaintext)</button>
+            <button id="enc-btn" type="button" class="btn primary">🔐 Cifra (usa k)</button>
+          </div>
+
+          <div class="stack">
+            <button id="crack-btn" type="button" class="btn secondary">🧠 Crack (auto-decrypt da ciphertext)</button>
+          </div>
+        </form>
+
+        <div id="cipher-output" style="display:none;">
+          <h3 class="section-title">Risultati</h3>
+          <pre id="result-text" class="panel" style="margin:0;"></pre>
+          <p class="muted" id="meta-line" style="margin:8px 0 0;"></p>
+        </div>
+
+        <div id="charts" style="display:none;">
+          <h3 class="section-title">Distribuzione lettere (Plain vs Cipher)</h3>
+          <p class="muted">
+            Frequenze relative su A–Z. Barre affiancate:
+            <span class="kbd" style="background:#e8f1ff;">Plain</span> vs
+            <span class="kbd" style="background:#ffe8e8;">Cipher</span>.
+            N=<span id="n-plain">0</span> (plain), N=<span id="n-cipher">0</span> (cipher)
+          </p>
+          <div style="width:100%;max-width:980px;">
+            <canvas id="hist-canvas" style="width:100%;height:420px;border:1px solid #e1e4ea;border-radius:10px;background:#fff;"></canvas>
+          </div>
+          <div class="muted" style="margin-top:8px;">
+            <span style="display:inline-block;width:12px;height:12px;background:#4e79a7;border:1px solid #365b82;vertical-align:middle;margin-right:6px;"></span> Plain
+            <span style="display:inline-block;width:12px;height:12px;background:#e15759;border:1px solid #b13b3d;vertical-align:middle;margin:0 6px 0 16px;"></span> Cipher
+          </div>
+
+          <details style="margin-top:10px;">
+            <summary class="section-title" style="font-size:1.05rem;">Tabella frequenze (percentuali)</summary>
+            <table class="datatable" id="freq-table">
+              <thead><tr><th>Lettera</th><th>Plain %</th><th>Cipher %</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </details>
+        </div>
+      </div>
+      <!-- ================== Fine sezione Caesar ================== -->
+
+      <div style="margin-top:24px;">
+        <a class="button" href="../../index.html">⬅ Back to Home</a>
+      </div>
     </main>
 
     <footer>
       © 2025 Antonio Elia — 2253126 Statistics
     </footer>
+
+    <!-- =================== Script Caesar: analisi, encrypt, crack =================== -->
+    <script src="./homework2.js" defer></script>
   </body>
 </html>
