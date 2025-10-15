@@ -1,10 +1,34 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Homework 2 - Statistics Antonio Elia</title>
-    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="../../style.css" />
+    <style>
+      .grid-img { display: grid; gap: 12px; grid-template-columns: 1fr; }
+      @media (min-width: 900px) { .grid-img { grid-template-columns: 1fr 1fr; } }
+      figure { margin: 0; border: 1px solid #e1e4ea; border-radius: 10px; overflow: hidden; background: #fff; }
+      figure img { display: block; width: 100%; height: auto; }
+      figure figcaption { padding: 8px 10px; font-size: 0.95rem; background: #fafbfe; border-top: 1px solid #eef1f6; }
+
+      .tables { display: grid; gap: 16px; }
+      @media (min-width: 900px) { .tables.twin { grid-template-columns: 1fr 1fr; } }
+      @media (min-width: 1200px) { .tables.tri { grid-template-columns: 1fr 1fr 1fr; } }
+
+      .question-title { font-size: 2.4rem; }
+      .section-title { font-size: 1.35rem; font-weight: 600; }
+
+      .datatable { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e1e4ea; border-radius: 10px; overflow: hidden; }
+      .datatable th, .datatable td { padding: 10px 12px; border-bottom: 1px solid #eef1f6; text-align: left; }
+      .datatable thead th { background: #f5f7fb; font-weight: 600; }
+      .datatable tbody tr:hover { background: #fafcff; }
+      .nowrap { white-space: nowrap; }
+      .muted { color: #5f6b7a; font-size: 0.95rem; }
+      .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background:#f5f7fb; border:1px solid #e1e4ea; border-radius:6px; padding: 0 6px; }
+      .sql { margin-top: 8px; }
+      .sql code { display: block; white-space: pre-wrap; background:#f8fafc; border:1px solid #e1e4ea; border-radius:8px; padding:8px 10px; }
+    </style>
   </head>
   <body>
     <header>
@@ -13,57 +37,219 @@
     </header>
 
     <main>
-      <h2>What is a dataset?</h2>
+      <h2 class="question-title">What is a dataset?</h2>
       <p>
-        A <strong>dataset</strong> is a structured collection of data gathered and organized for analysis. It can be a table with rows (observations) and columns (variables), a time series, or even a collection of images or texts. Each row typically represents an observation (e.g., an event), while each column represents a variable or feature of that observation.
+        A dataset is a structured and organized collection of data, usually arranged in rows (observations) and columns (variables).
+It represents the foundation of any statistical analysis: without data, no descriptive, inferential, or predictive methods can be applied.
+In cybersecurity, datasets often contain logs, access events, authentication attempts, malware detections, or system alerts.
+Each record is a measurable event, such as a device generating an action at a specific timestamp.
+This structure allows for quantitative analysis through measures like frequencies, averages, and proportions.
+It also enables pattern detection, anomaly identification, and trend monitoring.
+By organizing raw information, statistical tools can extract meaningful insights.
+A dataset makes complex systems analyzable and measurable.
+
       </p>
-      <h2>What is a distribution?</h2>
+
+      <h2 class="question-title">What is a distribution?</h2>
       <p>
-        In statistics, a <strong>distribution</strong> describes how data are spread across the possible values—how often different values or ranges occur. Understanding the distribution lets us see where the data cluster, where they are sparse, and the overall shape of the dataset.
+       A distribution describes how the values of a variable are spread across their possible outcomes.
+It shows how often each value or category occurs in a dataset, revealing concentration, variability, and rare events.
+From a statistical perspective, analyzing distributions is a fundamental first step to understanding any data source.
+It provides insight into structure, balance, and anomalies that may require further investigation.
+Distributions can be represented through frequency tables, bar charts, or mathematical models.
+Statistical models like normal, Poisson, or exponential distributions help describe patterns more precisely.
+By examining their shape, it is possible to detect unusual behaviors early.Understanding distributions means transforming raw data into structured knowledge.
+This step is essential to detect irregularities, strengthen defenses, and make data-driven security decisions.
       </p>
-
-      <h2>Example of a real dataset and distributions</h2>
+      <h2 class="section-title">Practice example: security logs and distributions</h2>
       <p>
-        Let’s imagine working in a security operations center that monitors access logs to a corporate portal. Every time a user interacts with the system, an event is recorded describing what happened. From this collection of events, we can build a dataset, a structured set of data designed for statistical analysis. Suppose the dataset contains three main columns: a user identifier (user_id), a precise timestamp of the event (timestamp), and the type of action performed (action).
+        We build a small dataset of <em>security logs</em> (8 rows) with three variables:
+        <code>device_id</code>, <code>timestamp</code>, and <code>action</code>. We present the dataset,
+        then the <strong>univariate distributions</strong> (value and frequency for each variable),
+        and finally a compact <strong>bivariate distribution</strong> to see how two attributes co-occur.
       </p>
+      <!-- SQL & images -->
+      <h2 class="section-title">Database SQL: creation and population</h2>
+      <p class="muted">
+        Schema and insert statements that generate the dataset. On the left the <span class="kbd">CREATE TABLE</span>,
+        on the right the <span class="kbd">INSERT</span> statements (8 rows).
+      </p>
+      <div class="grid-img">
+        <figure>
+          <img src="./createTable.png" alt="SQL: CREATE TABLE for events">
+          <figcaption>Definition of table <code>events</code> with three fields: <code>device_id</code>, <code>timestamp</code>, <code>action</code>.</figcaption>
+        </figure>
+        <figure>
+          <img src="./populate.png" alt="SQL: INSERT statements for events">
+          <figcaption>Insertion of 8 example events: successes, failures, and one password reset.</figcaption>
+        </figure>
+      </div>
 
-      <!-- Controlli interattivi -->
-<section class="panel">
-<h3>Distribuzione per:</h3>
-<div class="controls">
-<button class="groupBtn" data-group="user_id">user_id</button>
-<button class="groupBtn" data-group="action">action</button>
-<button class="groupBtn" data-group="date" title="Raggruppa per giorno">data</button>
-</div>
-</section>
+      <!-- Dataset -->
+      <h2 class="section-title">Dataset </h2>
+      <table class="datatable">
+        <thead>
+          <tr>
+            <th>device_id</th>
+            <th class="nowrap">timestamp</th>
+            <th>action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>DEV-A</td><td class="nowrap">2025-10-12T23:45:12Z</td><td>login_success</td></tr>
+          <tr><td>DEV-B</td><td class="nowrap">2025-10-13T08:46:01Z</td><td>login_failed</td></tr>
+          <tr><td>DEV-A</td><td class="nowrap">2025-10-13T08:50:45Z</td><td>password_reset</td></tr>
+          <tr><td>DEV-C</td><td class="nowrap">2025-10-13T09:01:33Z</td><td>login_success</td></tr>
+          <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:05:20Z</td><td>login_failed</td></tr>
+          <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:07:55Z</td><td>login_failed</td></tr>
+          <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:09:42Z</td><td>login_success</td></tr>
+          <tr><td>DEV-C</td><td class="nowrap">2025-10-14T09:15:00Z</td><td>login_success</td></tr>
+        </tbody>
+      </table>
 
+      <!-- Univariate distributions -->
+      <h2 class="section-title">Univariate distributions (value and frequency)</h2>
+      <div class="tables tri">
+        <!-- action -->
+        <section>
+          <h3>By <code>action</code></h3>
+          <table class="datatable">
+            <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
+            <tbody>
+              <tr><td>login_success</td><td>4</td></tr>
+              <tr><td>login_failed</td><td>3</td></tr>
+              <tr><td>password_reset</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <div class="sql"><code>SELECT action AS value, COUNT(*) AS frequency
+FROM events
+GROUP BY action
+ORDER BY frequency DESC;</code></div>
+          <p class="muted">This distribution shows how many events fall in each <em>action</em> category.</p>
+        </section>
 
-<!-- Tabelle -->
-<section>
-<h3>Eventi (dataset fisso)</h3>
-<div id="eventsWrap" class="table-wrap"></div>
-</section>
+        <!-- device_id -->
+        <section>
+          <h3>By <code>device_id</code></h3>
+          <table class="datatable">
+            <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
+            <tbody>
+              <tr><td>DEV-B</td><td>4</td></tr>
+              <tr><td>DEV-A</td><td>2</td></tr>
+              <tr><td>DEV-C</td><td>2</td></tr>
+            </tbody>
+          </table>
+          <div class="sql"><code>SELECT device_id AS value, COUNT(*) AS frequency
+FROM events
+GROUP BY device_id
+ORDER BY frequency DESC;</code></div>
+          <p class="muted">This distribution shows how events are distributed across devices.</p>
+        </section>
 
+        <!-- date -->
+        <section>
+          <h3>By <code>date</code> (YYYY-MM-DD)</h3>
+          <table class="datatable">
+            <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
+            <tbody>
+              <tr><td>2025-10-12</td><td>1</td></tr>
+              <tr><td>2025-10-13</td><td>3</td></tr>
+              <tr><td>2025-10-14</td><td>4</td></tr>
+            </tbody>
+          </table>
+          <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS value, COUNT(*) AS frequency
+FROM events
+GROUP BY value;
+</code></div>
+          <p class="muted">This distribution reveals the daily pattern of activity over time.</p>
+        </section>
+      </div>
 
-<section>
-<h3>Distribuzione (frequenze)</h3>
-<div id="distInfo" class="muted">Clicca su uno dei tre parametri sopra.</div>
-<div id="distTable" class="table-wrap"></div>
-</section>
+      <!-- Bivariate distributions -->
+      <h2 class="section-title">Bivariate distributions</h2>
 
+      <section style="margin-bottom: 24px;">
+        <h3><code>device_id × action</code></h3>
+        <table class="datatable">
+          <thead>
+            <tr>
+              <th>device_id</th>
+              <th>action</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>DEV-A</td><td>login_success</td><td>1</td></tr>
+            <tr><td>DEV-A</td><td>password_reset</td><td>1</td></tr>
+            <tr><td>DEV-B</td><td>login_failed</td><td>3</td></tr>
+            <tr><td>DEV-B</td><td>login_success</td><td>1</td></tr>
+            <tr><td>DEV-C</td><td>login_success</td><td>2</td></tr>
+          </tbody>
+        </table>
+        <div class="sql"><code>SELECT device_id, action, COUNT(*) AS frequency
+FROM events
+GROUP BY device_id, action
+ORDER BY device_id, action;</code></div>
+        <p class="muted">This bivariate distribution shows how each device is associated with specific actions.</p>
+      </section>
 
-<nav style="margin-top: 16px">
-<a class="button" href="../../index.html">⬅ Back to Home</a>
-</nav>
-</main>
+      <section style="margin-bottom: 24px;">
+        <h3><code>date × action</code></h3>
+        <table class="datatable">
+          <thead>
+            <tr>
+              <th>date</th>
+              <th>action</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>2025-10-12</td><td>login_success</td><td>1</td></tr>
+            <tr><td>2025-10-13</td><td>login_failed</td><td>1</td></tr>
+            <tr><td>2025-10-13</td><td>password_reset</td><td>1</td></tr>
+            <tr><td>2025-10-13</td><td>login_success</td><td>1</td></tr>
+            <tr><td>2025-10-14</td><td>login_failed</td><td>2</td></tr>
+            <tr><td>2025-10-14</td><td>login_success</td><td>2</td></tr>
+          </tbody>
+        </table>
+        <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS date, action, COUNT(*) AS frequency
+FROM events
+GROUP BY date, action
+ORDER BY date, action;</code></div>
+        <p class="muted">This shows how actions are distributed across different dates.</p>
+      </section>
 
+      <section>
+        <h3><code>device_id × date</code></h3>
+        <table class="datatable">
+          <thead>
+            <tr>
+              <th>device_id</th>
+              <th>date</th>
+              <th>Frequency</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>DEV-A</td><td>2025-10-12</td><td>1</td></tr>
+            <tr><td>DEV-A</td><td>2025-10-13</td><td>1</td></tr>
+            <tr><td>DEV-B</td><td>2025-10-13</td><td>1</td></tr>
+            <tr><td>DEV-B</td><td>2025-10-14</td><td>3</td></tr>
+            <tr><td>DEV-C</td><td>2025-10-13</td><td>1</td></tr>
+            <tr><td>DEV-C</td><td>2025-10-14</td><td>1</td></tr>
+          </tbody>
+        </table>
+        <div class="sql"><code>SELECT device_id, substr(timestamp, 1, 10) AS date, COUNT(*) AS frequency
+FROM events
+GROUP BY device_id, date
+ORDER BY device_id, date;</code></div>
+        <p class="muted">This shows the activity of each device distributed over different dates.</p>
+      </section>
 
-<footer>
-© 2025 Antonio Elia — 2253126 Statistics
-</footer>
+      <a class="button" href="../../index.html">⬅ Back to Home</a>
+    </main>
 
-
-<!-- Collega lo script della pagina Homework 2 -->
-<script src="./homework2.js" defer></script>
-</body>
+    <footer>
+      © 2025 Antonio Elia — 2253126 Statistics
+    </footer>
+  </body>
 </html>
