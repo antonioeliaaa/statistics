@@ -1,60 +1,327 @@
+/* ============================
+   Global Base Styles
+   ============================ */
+
+:root {
+  --brand: #2c3e50;
+  --ink: #333333;
+  --ink-muted: #667085;
+  --panel: #ffffff;
+  --bg: #f5f5f5;
+  --line: #e1e4ea;
+  --focus: #2563eb;
+  --good: #16a34a;
+  --bad: #dc2626;
+  --warn: #d97706;
+}
+
+html { box-sizing: border-box; }
+*, *::before, *::after { box-sizing: inherit; }
+
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
-  color: #333;
-}
-
-header {
-  background-color: #2c3e50;
-  color: white;
-  padding: 2rem 1rem;
-  text-align: center;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 2.5rem;
-}
-
-header p {
-  margin: 0.5rem 0 0;
-  font-size: 1.2rem;
-}
-
-main {
-  max-width: 800px;
-  margin: 2rem auto;
-  padding: 0 1rem;
-}
-
-main h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  border-bottom: 2px solid #2c3e50;
-  display: inline-block;
-}
-
-main p {
+  background: var(--bg);
+  color: var(--ink);
   line-height: 1.6;
 }
 
+/* ============================
+   Header
+   ============================ */
+
+header {
+  background: var(--brand);
+  color: #fff;
+  padding: 2rem 1rem;
+  text-align: center;
+}
+header h1 { margin: 0; font-size: 2.5rem; }
+header p  { margin: 0.5rem 0 0; font-size: 1.2rem; }
+
+/* ============================
+   Main Layout
+   ============================ */
+
+main {
+  max-width: 1000px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+main h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--brand);
+  display: inline-block;
+}
+
+/* ============================
+   Typography & Utilities
+   ============================ */
+
+.question-title,
+.section-title {
+  display: block;
+  margin: 1.75rem 0 0.75rem;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--brand);
+}
+.question-title { font-size: 1.6rem; }
+.section-title  { font-size: 1.3rem; }
+
+.muted  { color: var(--ink-muted); }
+.nowrap { white-space: nowrap; }
+
+.kbd {
+  display: inline-block;
+  padding: 0.12rem 0.4rem;
+  border: 1px solid var(--line);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: #f8fafc;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85em;
+}
+code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* Links come bottoni legacy */
 a.button {
   display: inline-block;
   margin-top: 1.5rem;
   margin-right: 1rem;
   padding: 0.75rem 1.5rem;
-  background-color: #2c3e50;
-  color: white;
+  background: var(--brand);
+  color: #fff;
   text-decoration: none;
-  border-radius: 4px;
-  transition: background-color 0.3s;
+  border-radius: 10px;
+  transition: background-color .2s ease, transform .06s ease;
+}
+a.button:hover { background: #1a242f; transform: translateY(-1px); }
+
+/* ============================
+   Panels / Cards / Hints
+   ============================ */
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 1px 2px rgba(16,24,40,.05);
+}
+.hint {
+  background: #eef6ff;
+  border: 1px solid #d6e6ff;
+  color: #0b3b78;
+  border-radius: 12px;
+  padding: 0.9rem 1rem;
 }
 
-a.button:hover {
-  background-color: #1a242f;
+/* ============================
+   Grid Helpers
+   ============================ */
+
+.stack { display: grid; gap: 10px; }
+.stack.twin { grid-template-columns: 1fr; gap: 12px; }
+@media (min-width: 760px) { .stack.twin { grid-template-columns: 1fr 1fr; } }
+
+.tables.tri { display: grid; gap: 16px; }
+@media (min-width: 920px) { .tables.tri { grid-template-columns: repeat(3, 1fr); } }
+
+/* Media grid */
+.grid-img {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin: 0.5rem 0 1.25rem;
 }
+@media (min-width: 760px) { .grid-img { grid-template-columns: 1fr 1fr; } }
+.grid-img figure { margin: 0; }
+.grid-img img {
+  width: 100%; height: auto; display: block;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+}
+.grid-img figcaption { font-size: .92rem; color: var(--ink-muted); margin-top: 6px; }
+
+/* ============================
+   Forms & Focus
+   ============================ */
+
+#caesar-app form label > span { margin-bottom: 6px; }
+textarea,
+input[type="number"],
+input[type="text"],
+input[type="search"],
+select {
+  width: 100%;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+}
+textarea { resize: vertical; }
+
+textarea:focus,
+input:focus,
+select:focus,
+button:focus,
+a.button:focus {
+  outline: 3px solid color-mix(in oklab, var(--focus), white 60%);
+  outline-offset: 2px;
+}
+
+/* Buttons moderni */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 0.7rem 1rem;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  background: #334155;
+  color: #fff;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: transform .06s ease, background-color .2s ease, box-shadow .2s ease;
+}
+.btn:hover { transform: translateY(-1px); }
+.btn:active { transform: translateY(0); }
+.btn.primary { background: #1f2937; }
+.btn.primary:hover { background: #111827; }
+.btn.secondary { background: #e2e8f0; color: #0f172a; border-color: #cbd5e1; }
+.btn.secondary:hover { background: #cbd5e1; }
+
+/* ============================
+   SQL Blocks
+   ============================ */
+
+.sql {
+  margin-top: 8px;
+  padding: 10px 12px;
+  border: 1px dashed var(--line);
+  border-radius: 10px;
+  background: #0b1020;
+  color: #e6edf3;
+  overflow-x: auto;
+}
+.sql code { color: inherit; }
+
+/* ============================
+   Tabelle (pro, sticky header)
+   ============================ */
+
+/* Wrapper opzionale per ombra/scroll */
+.table-wrap {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: 0 1px 2px rgba(16,24,40,.05);
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  mask-image: linear-gradient(90deg, transparent, #000 16px, #000 calc(100% - 16px), transparent);
+}
+
+/* Tabella */
+.datatable {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  table-layout: fixed;
+  background: var(--panel);
+}
+
+/* Header */
+.datatable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: #eef2f6;
+  color: #111827;
+  font-weight: 700;
+  text-align: left;
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* Celle */
+.datatable tbody td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: middle;
+  overflow-wrap: anywhere;
+}
+
+/* Zebra + hover */
+.datatable tbody tr:nth-child(even) { background: #fafafa; }
+.datatable tbody tr:hover { background: #f0f4ff; }
+
+/* Angoli arrotondati */
+.datatable thead th:first-child { border-top-left-radius: 12px; }
+.datatable thead th:last-child  { border-top-right-radius: 12px; }
+.datatable tbody tr:last-child td:first-child { border-bottom-left-radius: 12px; }
+.datatable tbody tr:last-child td:last-child  { border-bottom-right-radius: 12px; }
+
+/* Larghezze colonne (device_id | timestamp | action) */
+.datatable thead th:nth-child(1),
+.datatable tbody td:nth-child(1) {
+  width: 18ch;
+  white-space: nowrap;
+}
+.datatable thead th:nth-child(2),
+.datatable tbody td:nth-child(2) {
+  width: 26ch;
+  white-space: nowrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+.datatable thead th:nth-child(3),
+.datatable tbody td:nth-child(3) {
+  width: 20ch;
+}
+
+/* Variante compatta */
+.datatable.dense thead th,
+.datatable.dense tbody td { padding: 8px 10px; }
+
+/* Badge per action (opzionali: applica classi al contenuto cella) */
+.badge {
+  display: inline-block;
+  padding: .25rem .55rem;
+  font-size: .85rem;
+  line-height: 1;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  background: #eef2f7;
+  color: #0f172a;
+}
+.badge.good { background: color-mix(in oklab, var(--good), white 82%); color: var(--good); border-color: color-mix(in oklab, var(--good), white 70%); }
+.badge.bad  { background: color-mix(in oklab, var(--bad),  white 88%); color: var(--bad);  border-color: color-mix(in oklab, var(--bad),  white 70%); }
+.badge.warn { background: color-mix(in oklab, var(--warn), white 86%); color: var(--warn); border-color: color-mix(in oklab, var(--warn), white 70%); }
+
+/* Se non usi .table-wrap, rendi la tabella scrollabile comunque */
+@supports (overflow: auto) {
+  .datatable { border-radius: 12px; }
+}
+
+/* ============================
+   Results & Charts
+   ============================ */
+
+#cipher-output pre { white-space: pre-wrap; word-wrap: break-word; }
+#charts .muted .kbd { background: #eef2ff; }
+#hist-canvas { display: block; }
+
+/* ============================
+   Footer
+   ============================ */
 
 footer {
   color: black;
@@ -63,3 +330,4 @@ footer {
   margin-top: 3rem;
   font-size: 0.9rem;
 }
+footer small { color: var(--ink-muted); }

@@ -1,570 +1,309 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
     <title>Homework 2 - Statistics Antonio Elia</title>
+
+    <!-- Global project stylesheet -->
     <link rel="stylesheet" href="../../style.css" />
+
+    <!-- Accessible hidden element only -->
     <style>
-      .grid-img { display: grid; gap: 12px; grid-template-columns: 1fr; }
-      @media (min-width: 900px) { .grid-img { grid-template-columns: 1fr 1fr; } }
-      figure { margin: 0; border: 1px solid #e1e4ea; border-radius: 10px; overflow: hidden; background: #fff; }
-      figure img { display: block; width: 100%; height: auto; }
-      figure figcaption { padding: 8px 10px; font-size: 0.95rem; background: #fafbfe; border-top: 1px solid #eef1f6; }
-
-      .tables { display: grid; gap: 16px; }
-      @media (min-width: 900px) { .tables.twin { grid-template-columns: 1fr 1fr; } }
-      @media (min-width: 1200px) { .tables.tri { grid-template-columns: 1fr 1fr 1fr; } }
-
-      .question-title { font-size: 2.4rem; }
-      .section-title { font-size: 1.35rem; font-weight: 600; }
-
-      .datatable { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid #e1e4ea; border-radius: 10px; overflow: hidden; }
-      .datatable th, .datatable td { padding: 10px 12px; border-bottom: 1px solid #eef1f6; text-align: left; }
-      .datatable thead th { background: #f5f7fb; font-weight: 600; }
-      .datatable tbody tr:hover { background: #fafcff; }
-      .nowrap { white-space: nowrap; }
-      .muted { color: #5f6b7a; font-size: 0.95rem; }
-      .kbd { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; background:#f5f7fb; border:1px solid #e1e4ea; border-radius:6px; padding: 0 6px; }
-
-      /* Helpers per la sezione Caesar */
-      .btn { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:10px; cursor:pointer; font-weight:600; }
-      .btn.primary { background:#111827; color:#fff; border:1px solid #111827; }
-      .btn.secondary { background:#fff; color:#111827; border:1px solid #e1e4ea; }
-      .panel { background:#fff; border:1px solid #e1e4ea; border-radius:10px; padding:12px; }
-      .stack { display:grid; gap:12px; }
-      .stack.twin { grid-template-columns: 1fr 1fr; }
-      @media (max-width: 800px){ .stack.twin { grid-template-columns: 1fr; } }
-      .hint { padding:10px 12px; border:1px dashed #e1e4ea; border-radius:10px; background:#fcfcff; }
+      .visually-hidden{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     </style>
   </head>
   <body>
     <header>
       <h1>Statistics Antonio Elia</h1>
+      <span class="visually-hidden" aria-live="polite">
+        Educational page: dataset, distributions and Caesar cipher
+      </span>
       <p>ID: 2253126 — Homework 2</p>
     </header>
 
     <main>
-      <h2 class="question-title">What is a dataset?</h2>
-      <p>
-        A dataset is a structured and organized collection of data, usually arranged in rows (observations) and columns (variables).
-        It represents the foundation of any statistical analysis: without data, no descriptive, inferential, or predictive methods can be applied.
-        In cybersecurity, datasets often contain logs, access events, authentication attempts, malware detections, or system alerts.
-        Each record is a measurable event, such as a device generating an action at a specific timestamp.
-        This structure allows for quantitative analysis through measures like frequencies, averages, and proportions.
-        It also enables pattern detection, anomaly identification, and trend monitoring.
-        By organizing raw information, statistical tools can extract meaningful insights.
-        A dataset makes complex systems analyzable and measurable.
-      </p>
+      <section role="region" aria-label="Educational content">
+        <h2 class="question-title">What is a dataset?</h2>
+        <p>
+          A dataset is a structured and organized collection of data, usually arranged in rows (observations) and columns (variables).
+          It represents the foundation of any statistical analysis: without data, no descriptive, inferential, or predictive methods can be applied.
+          In cybersecurity, datasets often contain logs, access events, authentication attempts, malware detections, or system alerts.
+          Each record is a measurable event, such as a device generating an action at a specific timestamp.
+          This structure allows for quantitative analysis through measures like frequencies, averages, and proportions.
+          It also enables pattern detection, anomaly identification, and trend monitoring.
+          By organizing raw information, statistical tools can extract meaningful insights.
+          A dataset makes complex systems analyzable and measurable.
+        </p>
 
-      <h2 class="question-title">What is a distribution?</h2>
-      <p>
-        A distribution describes how the values of a variable are spread across their possible outcomes.
-        It shows how often each value or category occurs in a dataset, revealing concentration, variability, and rare events.
-        From a statistical perspective, analyzing distributions is a fundamental first step to understanding any data source.
-        It provides insight into structure, balance, and anomalies that may require further investigation.
-        Distributions can be represented through frequency tables, bar charts, or mathematical models.
-        Statistical models like normal, Poisson, or exponential distributions help describe patterns more precisely.
-        By examining their shape, it is possible to detect unusual behaviors early. Understanding distributions means transforming raw data into structured knowledge.
-        This step is essential to detect irregularities, strengthen defenses, and make data-driven security decisions.
-      </p>
+        <h2 class="question-title">What is a distribution?</h2>
+        <p>
+          A distribution describes how the values of a variable are spread across their possible outcomes.
+          It shows how often each value or category occurs in a dataset, revealing concentration, variability, and rare events.
+          From a statistical perspective, analyzing distributions is a fundamental first step to understanding any data source.
+          It provides insight into structure, balance, and anomalies that may require further investigation.
+          Distributions can be represented through frequency tables, bar charts, or mathematical models.
+          Statistical models like normal, Poisson, or exponential distributions help describe patterns more precisely.
+          By examining their shape, it is possible to detect unusual behaviors early. Understanding distributions means transforming raw data into structured knowledge.
+          This step is essential to detect irregularities, strengthen defenses, and make data-driven security decisions.
+        </p>
 
-      <h2 class="section-title">Practice example: security logs and distributions</h2>
-      <p>
-        We build a small dataset of <em>security logs</em> (8 rows) with three variables:
-        <code>device_id</code>, <code>timestamp</code>, and <code>action</code>. We present the dataset,
-        then the <strong>univariate distributions</strong> (value and frequency for each variable),
-        and finally a compact <strong>bivariate distribution</strong> to see how two attributes co-occur.
-      </p>
+        <h2 class="section-title">Practical example: security logs and distributions</h2>
+        <p>
+          We build a small dataset of <em>security logs</em> (8 rows) with three variables:
+          <code>device_id</code>, <code>timestamp</code>, and <code>action</code>. We present the dataset,
+          then the <strong>univariate distributions</strong> (value and frequency for each variable),
+          and finally a compact <strong>bivariate distribution</strong> to see how two attributes co-occur.
+        </p>
 
-      <h2 class="section-title">Database SQL: creation and population</h2>
-      <p class="muted">
-        Schema and insert statements that generate the dataset. On the left the <span class="kbd">CREATE TABLE</span>,
-        on the right the <span class="kbd">INSERT</span> statements (8 rows).
-      </p>
-      <div class="grid-img">
-        <figure>
-          <img src="./createTable.png" alt="SQL: CREATE TABLE for events">
-          <figcaption>Definition of table <code>events</code> with three fields: <code>device_id</code>, <code>timestamp</code>, <code>action</code>.</figcaption>
-        </figure>
-        <figure>
-          <img src="./populate.png" alt="SQL: INSERT statements for events">
-          <figcaption>Insertion of 8 example events: successes, failures, and one password reset.</figcaption>
-        </figure>
-      </div>
+        <h2 class="section-title">Database SQL: creation and population</h2>
+        <p class="muted">
+          Schema and insert statements that generate the dataset. On the left the <span class="kbd">CREATE TABLE</span>,
+          on the right the <span class="kbd">INSERT</span> statements (8 rows).
+        </p>
+        <div class="grid-img">
+          <figure>
+            <img src="./createTable.png" alt="SQL: CREATE TABLE for events" />
+            <figcaption>Definition of table <code>events</code> with three fields: <code>device_id</code>, <code>timestamp</code>, <code>action</code>.</figcaption>
+          </figure>
+          <figure>
+            <img src="./populate.png" alt="SQL: INSERT statements for events" />
+            <figcaption>Insertion of 8 example events: successes, failures, and one password reset.</figcaption>
+          </figure>
+        </div>
 
-      <h2 class="section-title">Dataset</h2>
-      <table class="datatable">
-        <thead>
-          <tr>
-            <th>device_id</th>
-            <th class="nowrap">timestamp</th>
-            <th>action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>DEV-A</td><td class="nowrap">2025-10-12T23:45:12Z</td><td>login_success</td></tr>
-          <tr><td>DEV-B</td><td class="nowrap">2025-10-13T08:46:01Z</td><td>login_failed</td></tr>
-          <tr><td>DEV-A</td><td class="nowrap">2025-10-13T08:50:45Z</td><td>password_reset</td></tr>
-          <tr><td>DEV-C</td><td class="nowrap">2025-10-13T09:01:33Z</td><td>login_success</td></tr>
-          <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:05:20Z</td><td>login_failed</td></tr>
-          <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:07:55Z</td><td>login_failed</td></tr>
-          <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:09:42Z</td><td>login_success</td></tr>
-          <tr><td>DEV-C</td><td class="nowrap">2025-10-14T09:15:00Z</td><td>login_success</td></tr>
-        </tbody>
-      </table>
+        <h2 class="section-title">Dataset</h2>
+        <table class="datatable">
+          <thead>
+            <tr>
+              <th>device_id</th>
+              <th class="nowrap">timestamp</th>
+              <th>action</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>DEV-A</td><td class="nowrap">2025-10-12T23:45:12Z</td><td>login_success</td></tr>
+            <tr><td>DEV-B</td><td class="nowrap">2025-10-13T08:46:01Z</td><td>login_failed</td></tr>
+            <tr><td>DEV-A</td><td class="nowrap">2025-10-13T08:50:45Z</td><td>password_reset</td></tr>
+            <tr><td>DEV-C</td><td class="nowrap">2025-10-13T09:01:33Z</td><td>login_success</td></tr>
+            <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:05:20Z</td><td>login_failed</td></tr>
+            <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:07:55Z</td><td>login_failed</td></tr>
+            <tr><td>DEV-B</td><td class="nowrap">2025-10-14T09:09:42Z</td><td>login_success</td></tr>
+            <tr><td>DEV-C</td><td class="nowrap">2025-10-14T09:15:00Z</td><td>login_success</td></tr>
+          </tbody>
+        </table>
 
-      <h2 class="section-title">Univariate distributions (value and frequency)</h2>
-      <div class="tables tri">
-        <section>
-          <h3>By <code>action</code></h3>
-          <table class="datatable">
-            <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
-            <tbody>
-              <tr><td>login_success</td><td>4</td></tr>
-              <tr><td>login_failed</td><td>3</td></tr>
-              <tr><td>password_reset</td><td>1</td></tr>
-            </tbody>
-          </table>
-          <div class="sql"><code>SELECT action AS value, COUNT(*) AS frequency
+        <h2 class="section-title">Univariate distributions (value and frequency)</h2>
+        <div class="tables tri">
+          <section>
+            <h3>By <code>action</code></h3>
+            <table class="datatable">
+              <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
+              <tbody>
+                <tr><td>login_success</td><td>4</td></tr>
+                <tr><td>login_failed</td><td>3</td></tr>
+                <tr><td>password_reset</td><td>1</td></tr>
+              </tbody>
+            </table>
+            <div class="sql"><code>SELECT action AS value, COUNT(*) AS frequency
 FROM events
 GROUP BY action
 ORDER BY frequency DESC;</code></div>
-          <p class="muted">This distribution shows how many events fall in each <em>action</em> category.</p>
-        </section>
+            <p class="muted">This distribution shows how many events fall in each <em>action</em> category.</p>
+          </section>
 
-        <section>
-          <h3>By <code>device_id</code></h3>
-          <table class="datatable">
-            <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
-            <tbody>
-              <tr><td>DEV-B</td><td>4</td></tr>
-              <tr><td>DEV-A</td><td>2</td></tr>
-              <tr><td>DEV-C</td><td>2</td></tr>
-            </tbody>
-          </table>
-          <div class="sql"><code>SELECT device_id AS value, COUNT(*) AS frequency
+          <section>
+            <h3>By <code>device_id</code></h3>
+            <table class="datatable">
+              <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
+              <tbody>
+                <tr><td>DEV-B</td><td>4</td></tr>
+                <tr><td>DEV-A</td><td>2</td></tr>
+                <tr><td>DEV-C</td><td>2</td></tr>
+              </tbody>
+            </table>
+            <div class="sql"><code>SELECT device_id AS value, COUNT(*) AS frequency
 FROM events
 GROUP BY device_id
 ORDER BY frequency DESC;</code></div>
-          <p class="muted">This distribution shows how events are distributed across devices.</p>
-        </section>
-
-        <section>
-          <h3>By <code>date</code> (YYYY-MM-DD)</h3>
-          <table class="datatable">
-            <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
-            <tbody>
-              <tr><td>2025-10-12</td><td>1</td></tr>
-              <tr><td>2025-10-13</td><td>3</td></tr>
-              <tr><td>2025-10-14</td><td>4</td></tr>
-            </tbody>
-          </table>
-          <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS value, COUNT(*) AS frequency
+            <p class="muted">This distribution shows how events are distributed across devices.</p>
+          </section>
+          <br></br>
+          <section>
+            <h3>By <code>date</code> (YYYY-MM-DD)</h3>
+            <table class="datatable">
+              <thead><tr><th>Value</th><th>Frequency</th></tr></thead>
+              <tbody>
+                <tr><td>2025-10-12</td><td>1</td></tr>
+                <tr><td>2025-10-13</td><td>3</td></tr>
+                <tr><td>2025-10-14</td><td>4</td></tr>
+              </tbody>
+            </table>
+            <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS value, COUNT(*) AS frequency
 FROM events
 GROUP BY value;</code></div>
-          <p class="muted">This distribution reveals the daily pattern of activity over time.</p>
-        </section>
-      </div>
+            <p class="muted">This distribution reveals the daily activity pattern over time.</p>
+          </section>
+        </div>
 
-      <h2 class="section-title">Bivariate distributions</h2>
-      <section style="margin-bottom: 24px;">
-        <h3><code>device_id × action</code></h3>
-        <table class="datatable">
-          <thead>
-            <tr>
-              <th>device_id</th>
-              <th>action</th>
-              <th>Frequency</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>DEV-A</td><td>login_success</td><td>1</td></tr>
-            <tr><td>DEV-A</td><td>password_reset</td><td>1</td></tr>
-            <tr><td>DEV-B</td><td>login_failed</td><td>3</td></tr>
-            <tr><td>DEV-B</td><td>login_success</td><td>1</td></tr>
-            <tr><td>DEV-C</td><td>login_success</td><td>2</td></tr>
-          </tbody>
-        </table>
-        <div class="sql"><code>SELECT device_id, action, COUNT(*) AS frequency
+        <h2 class="section-title">Bivariate distributions</h2>
+        <section style="margin-bottom: 24px;">
+          <h3><code>device_id × action</code></h3>
+          <table class="datatable">
+            <thead>
+              <tr>
+                <th>device_id</th>
+                <th>action</th>
+                <th>Frequency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>DEV-A</td><td>login_success</td><td>1</td></tr>
+              <tr><td>DEV-A</td><td>password_reset</td><td>1</td></tr>
+              <tr><td>DEV-B</td><td>login_failed</td><td>3</td></tr>
+              <tr><td>DEV-B</td><td>login_success</td><td>1</td></tr>
+              <tr><td>DEV-C</td><td>login_success</td><td>2</td></tr>
+            </tbody>
+          </table>
+          <div class="sql"><code>SELECT device_id, action, COUNT(*) AS frequency
 FROM events
 GROUP BY device_id, action
 ORDER BY device_id, action;</code></div>
-        <p class="muted">This bivariate distribution shows how each device is associated with specific actions.</p>
-      </section>
+          <p class="muted">This bivariate distribution shows how each device is associated with specific actions.</p>
+        </section>
 
-      <section style="margin-bottom: 24px;">
-        <h3><code>date × action</code></h3>
-        <table class="datatable">
-          <thead>
-            <tr>
-              <th>date</th>
-              <th>action</th>
-              <th>Frequency</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>2025-10-12</td><td>login_success</td><td>1</td></tr>
-            <tr><td>2025-10-13</td><td>login_failed</td><td>1</td></tr>
-            <tr><td>2025-10-13</td><td>password_reset</td><td>1</td></tr>
-            <tr><td>2025-10-13</td><td>login_success</td><td>1</td></tr>
-            <tr><td>2025-10-14</td><td>login_failed</td><td>2</td></tr>
-            <tr><td>2025-10-14</td><td>login_success</td><td>2</td></tr>
-          </tbody>
-        </table>
-        <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS date, action, COUNT(*) AS frequency
+        <section style="margin-bottom: 24px;">
+          <h3><code>date × action</code></h3>
+          <table class="datatable">
+            <thead>
+              <tr>
+                <th>date</th>
+                <th>action</th>
+                <th>Frequency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>2025-10-12</td><td>login_success</td><td>1</td></tr>
+              <tr><td>2025-10-13</td><td>login_failed</td><td>1</td></tr>
+              <tr><td>2025-10-13</td><td>password_reset</td><td>1</td></tr>
+              <tr><td>2025-10-13</td><td>login_success</td><td>1</td></tr>
+              <tr><td>2025-10-14</td><td>login_failed</td><td>2</td></tr>
+              <tr><td>2025-10-14</td><td>login_success</td><td>2</td></tr>
+            </tbody>
+          </table>
+          <div class="sql"><code>SELECT substr(timestamp, 1, 10) AS date, action, COUNT(*) AS frequency
 FROM events
 GROUP BY date, action
 ORDER BY date, action;</code></div>
-        <p class="muted">This shows how actions are distributed across different dates.</p>
-      </section>
+          <p class="muted">This shows how actions are distributed across different dates.</p>
+        </section>
 
-      <section>
-        <h3><code>device_id × date</code></h3>
-        <table class="datatable">
-          <thead>
-            <tr>
-              <th>device_id</th>
-              <th>date</th>
-              <th>Frequency</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr><td>DEV-A</td><td>2025-10-12</td><td>1</td></tr>
-            <tr><td>DEV-A</td><td>2025-10-13</td><td>1</td></tr>
-            <tr><td>DEV-B</td><td>2025-10-13</td><td>1</td></tr>
-            <tr><td>DEV-B</td><td>2025-10-14</td><td>3</td></tr>
-            <tr><td>DEV-C</td><td>2025-10-13</td><td>1</td></tr>
-            <tr><td>DEV-C</td><td>2025-10-14</td><td>1</td></tr>
-          </tbody>
-        </table>
-        <div class="sql"><code>SELECT device_id, substr(timestamp, 1, 10) AS date, COUNT(*) AS frequency
+        <section>
+          <h3><code>device_id × date</code></h3>
+          <table class="datatable">
+            <thead>
+              <tr>
+                <th>device_id</th>
+                <th>date</th>
+                <th>Frequency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>DEV-A</td><td>2025-10-12</td><td>1</td></tr>
+              <tr><td>DEV-A</td><td>2025-10-13</td><td>1</td></tr>
+              <tr><td>DEV-B</td><td>2025-10-13</td><td>1</td></tr>
+              <tr><td>DEV-B</td><td>2025-10-14</td><td>3</td></tr>
+              <tr><td>DEV-C</td><td>2025-10-13</td><td>1</td></tr>
+              <tr><td>DEV-C</td><td>2025-10-14</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <div class="sql"><code>SELECT device_id, substr(timestamp, 1, 10) AS date, COUNT(*) AS frequency
 FROM events
 GROUP BY device_id, date
 ORDER BY device_id, date;</code></div>
-        <p class="muted">This shows the activity of each device distributed over different dates.</p>
+          <p class="muted">This shows the activity of each device distributed over different dates.</p>
+        </section>
+
+        <hr style="margin: 36px 0 16px;" />
+        <h2 class="question-title">Caesar cipher — distribution, encryption and decrypt via frequency analysis</h2>
+        <div class="hint">
+          The <strong>Caesar Cipher</strong> shifts each letter by <em>k</em> positions (mod 26). With k=3:
+          <span class="kbd">A→D</span>, <span class="kbd">B→E</span>, …, <span class="kbd">Z→C</span>.
+          Here: (1) we analyze the <em>distribution</em> of the text (A–Z only), (2) apply encryption, (3) run
+          <em>automatic decryption</em> by estimating the shift with a <em>chi-squared</em> test against Italian frequencies.
+        </div>
+
+        <div class="panel stack" id="caesar-app" role="application">
+          <form id="caesar-form" onsubmit="return false;" class="stack" autocomplete="off">
+            <label class="stack">
+              <span class="section-title" style="font-size:1.1rem;">Plaintext</span>
+              <textarea id="plain-input" rows="6" placeholder="Paste the text to analyze/encrypt..."></textarea>
+            </label>
+
+            <div class="stack twin">
+              <label class="stack">
+                <span style="font-weight:600;">Key k</span>
+                <input id="shift-input" type="number" min="-1000" max="1000" value="3" />
+              </label>
+              <label class="stack">
+                <span style="font-weight:600;">Ciphertext</span>
+                <textarea id="cipher-input" rows="3" placeholder="This field is filled in by the Encrypt button;"></textarea>
+              </label>
+            </div>
+
+            <div class="stack twin">
+              <button id="analyze-btn" type="button" class="btn secondary">📊 Analyze distribution (plaintext)</button>
+              <button id="enc-btn" type="button" class="btn primary">🔐 Encrypt (use k)</button>
+            </div>
+
+            <div class="stack">
+              <button id="crack-btn" type="button" class="btn secondary">🧠 Crack (auto-decrypt from ciphertext)</button>
+            </div>
+          </form>
+
+          <div id="cipher-output" style="display:none;">
+            <h3 class="section-title">Results</h3>
+            <pre id="result-text" class="panel" style="margin:0;"></pre>
+            <p class="muted" id="meta-line" style="margin:8px 0 0;"></p>
+          </div>
+
+          <div id="charts" style="display:none;">
+            <h3 class="section-title">Letter distribution (Plain vs Cipher)</h3>
+            <p class="muted">
+              Relative frequencies over A–Z. Side-by-side bars:
+              <span class="kbd" style="background:#e8f1ff;">Plain</span> vs
+              <span class="kbd" style="background:#ffe8e8;">Cipher</span>.
+              N=<span id="n-plain">0</span> (plain), N=<span id="n-cipher">0</span> (cipher)
+            </p>
+            <div style="width:100%;max-width:980px;">
+              <canvas id="hist-canvas" style="width:100%;height:420px;border:1px solid #e1e4ea;border-radius:10px;background:#fff;"></canvas>
+            </div>
+            <div class="muted" style="margin-top:8px;">
+              <span style="display:inline-block;width:12px;height:12px;background:#4e79a7;border:1px solid #365b82;vertical-align:middle;margin-right:6px;"></span> Plain
+              <span style="display:inline-block;width:12px;height:12px;background:#e15759;border:1px solid #b13b3d;vertical-align:middle;margin:0 6px 0 16px;"></span> Cipher
+            </div>
+
+            <details style="margin-top:10px;">
+              <summary class="section-title" style="font-size:1.05rem;">Frequency table (percentages)</summary>
+              <table class="datatable" id="freq-table">
+                <thead><tr><th>Letter</th><th>Plain %</th><th>Cipher %</th></tr></thead>
+                <tbody></tbody>
+              </table>
+            </details>
+          </div>
+        </div>
+
+        <div style="margin-top:24px;">
+          <a class="button" href="../../index.html">⬅ Back to Home</a>
+        </div>
       </section>
-
-      <!-- ==================== Caesar cipher (analisi, cifratura, crack) ==================== -->
-      <hr style="margin: 36px 0 16px;" />
-      <h2 class="question-title">Caesar cipher — distribuzione, cifratura e decrypt via frequency analysis</h2>
-      <div class="hint">
-        Il <strong>Cifrario di Cesare</strong> trasla ogni lettera di <em>k</em> posizioni (mod 26). Con k=3:
-        <span class="kbd">A→D</span>, <span class="kbd">B→E</span>, …, <span class="kbd">Z→C</span>.
-        Qui: (1) analizziamo la <em>distribuzione</em> del testo (solo A–Z), (2) applichiamo la cifratura, (3) facciamo
-        <em>decrypt automatico</em> stimando lo shift con un test <em>chi-quadrato</em> rispetto a frequenze italiane.
-      </div>
-
-      <div class="panel stack" id="caesar-app">
-        <form id="caesar-form" onsubmit="return false;" class="stack">
-          <label class="stack">
-            <span class="section-title" style="font-size:1.1rem;">Testo in chiaro (plaintext)</span>
-            <textarea id="plain-input" rows="6" placeholder="Incolla il testo da analizzare/cifrare..."></textarea>
-          </label>
-
-          <div class="stack twin">
-            <label class="stack">
-              <span style="font-weight:600;">Chiave k</span>
-              <input id="shift-input" type="number" min="-1000" max="1000" value="3" />
-            </label>
-            <label class="stack">
-              <span style="font-weight:600;">Testo cifrato (puoi incollare qui un ciphertext da crackare)</span>
-              <textarea id="cipher-input" rows="3" placeholder="Questo campo viene riempito dal bottone Cifra; puoi anche incollarci un ciphertext esterno."></textarea>
-            </label>
-          </div>
-
-          <div class="stack twin">
-            <button id="analyze-btn" type="button" class="btn secondary">📊 Analizza distribuzione (plaintext)</button>
-            <button id="enc-btn" type="button" class="btn primary">🔐 Cifra (usa k)</button>
-          </div>
-
-          <div class="stack">
-            <button id="crack-btn" type="button" class="btn secondary">🧠 Crack (auto-decrypt da ciphertext)</button>
-          </div>
-        </form>
-
-        <div id="cipher-output" style="display:none;">
-          <h3 class="section-title">Risultati</h3>
-          <pre id="result-text" class="panel" style="margin:0;"></pre>
-          <p class="muted" id="meta-line" style="margin:8px 0 0;"></p>
-        </div>
-
-        <div id="charts" style="display:none;">
-          <h3 class="section-title">Distribuzione lettere (Plain vs Cipher)</h3>
-          <p class="muted">
-            Frequenze relative su A–Z. Barre affiancate:
-            <span class="kbd" style="background:#e8f1ff;">Plain</span> vs
-            <span class="kbd" style="background:#ffe8e8;">Cipher</span>.
-            N=<span id="n-plain">0</span> (plain), N=<span id="n-cipher">0</span> (cipher)
-          </p>
-          <div style="width:100%;max-width:980px;">
-            <canvas id="hist-canvas" style="width:100%;height:420px;border:1px solid #e1e4ea;border-radius:10px;background:#fff;"></canvas>
-          </div>
-          <div class="muted" style="margin-top:8px;">
-            <span style="display:inline-block;width:12px;height:12px;background:#4e79a7;border:1px solid #365b82;vertical-align:middle;margin-right:6px;"></span> Plain
-            <span style="display:inline-block;width:12px;height:12px;background:#e15759;border:1px solid #b13b3d;vertical-align:middle;margin:0 6px 0 16px;"></span> Cipher
-          </div>
-
-          <details style="margin-top:10px;">
-            <summary class="section-title" style="font-size:1.05rem;">Tabella frequenze (percentuali)</summary>
-            <table class="datatable" id="freq-table">
-              <thead><tr><th>Lettera</th><th>Plain %</th><th>Cipher %</th></tr></thead>
-              <tbody></tbody>
-            </table>
-          </details>
-        </div>
-      </div>
-      <!-- ================== Fine sezione Caesar ================== -->
-
-      <div style="margin-top:24px;">
-        <a class="button" href="../../index.html">⬅ Back to Home</a>
-      </div>
     </main>
 
     <footer>
-      © 2025 Antonio Elia — 2253126 Statistics
+      <small>© 2025 Antonio Elia — 2253126 Statistics</small>
     </footer>
 
-    <!-- =================== Script Caesar: analisi, encrypt, crack =================== -->
-    <script>
-  (function() {
-    const A = 'A'.charCodeAt(0);
-    const letters = Array.from({length:26}, (_,i)=>String.fromCharCode(A+i));
-
-    // Frequenze italiane (fallback per crack quando manca il plaintext)
-    const ITALIAN_FREQ = (() => {
-      const base = {
-        A:.117, B:.009, C:.045, D:.037, E:.117, F:.011, G:.016, H:.012, I:.112,
-        L:.065, M:.025, N:.068, O:.098, P:.030, Q:.005, R:.063, S:.049, T:.056,
-        U:.030, V:.021, Z:.011
-      };
-      const fallback = {J:.001, K:.002, W:.001, X:.001, Y:.001};
-      const map = {};
-      for (let i=0;i<26;i++){
-        const ch = String.fromCharCode(A+i);
-        map[ch] = base[ch] ?? fallback[ch] ?? 0.001;
-      }
-      const s = Object.values(map).reduce((a,b)=>a+b,0);
-      for (const k in map) map[k] /= s;
-      return letters.map(ch => map[ch]);
-    })();
-
-    // ---- Normalizzazione e utilità
-    function stripAccentsUpper(t){
-      return t.toUpperCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
-    }
-    function toAZ(text) { return stripAccentsUpper(text).replace(/[^A-Z]/g, ''); }
-
-    function caesarEncryptAZ(t, k){
-      const s = ((k % 26) + 26) % 26;
-      return t.replace(/[A-Z]/g, ch => String.fromCharCode(A + ((ch.charCodeAt(0) - A + s) % 26)));
-    }
-    function caesarDecryptAZ(t, k){ return caesarEncryptAZ(t, -k); }
-
-    function freqAZ(textAZ) {
-      const counts = new Array(26).fill(0);
-      let tot = 0;
-      for (const ch of textAZ) { const i = ch.charCodeAt(0) - A; if (i>=0 && i<26){ counts[i]++; tot++; } }
-      const rel = counts.map(c => tot ? c/tot : 0);
-      return {counts, rel, tot};
-    }
-
-    // ---- Metriche
-    function dot(a,b){ let s=0; for(let i=0;i<26;i++) s += a[i]*b[i]; return s; } // più alto = meglio
-    function chiSquare(obsRel, expRel){ let s=0; for(let i=0;i<26;i++){ const o=obsRel[i], e=expRel[i]||1e-12; s += (o-e)*(o-e)/e; } return s; } // più basso = meglio
-
-    // Stima k massimizzando la similarità con una distribuzione target nota (plaintext)
-    function estimateShiftBySimilarity(cipherRel, targetRel){
-      let bestK = 0, bestScore = -Infinity;
-      for (let k=0; k<26; k++){
-        // ruota la distribuzione del decrypt: decrypt di k equivale a ruotare indietro di k
-        const rotated = cipherRel.map((_,i)=> cipherRel[(i+k)%26]);
-        const score = dot(rotated, targetRel); // vettori somma=1 ⇒ dot è un buon indice di match
-        if (score > bestScore){ bestScore = score; bestK = k; }
-      }
-      return {k: bestK, score: bestScore};
-    }
-
-    // Fallback: se manca target, usa chi^2 contro l'italiano
-    function estimateShiftByChiSquare(cipherRel){
-      let bestK=0, best=Infinity;
-      for (let k=0; k<26; k++){
-        const rotated = cipherRel.map((_,i)=> cipherRel[(i+k)%26]);
-        const s = chiSquare(rotated, ITALIAN_FREQ);
-        if (s < best){ best = s; bestK = k; }
-      }
-      return {k: bestK, score: best};
-    }
-
-    // ---- Grafica
-    function drawHistogram(canvas, labels, s1, s2) {
-      const dpr = window.devicePixelRatio || 1;
-      const ctx = canvas.getContext('2d');
-      const W = canvas.clientWidth, H = canvas.clientHeight;
-      canvas.width = Math.floor(W*dpr); canvas.height = Math.floor(H*dpr);
-      ctx.scale(dpr,dpr);
-
-      const m = {top:20,right:20,bottom:60,left:50};
-      const w = W - m.left - m.right;
-      const h = H - m.top - m.bottom;
-
-      ctx.fillStyle = '#ffffff'; ctx.fillRect(0,0,W,H);
-
-      const maxVal = Math.max(...s1, ...s2, 0.15);
-      const yTicks = 5;
-      ctx.strokeStyle = '#e6eaf2';
-      ctx.fillStyle = '#5f6b7a';
-      ctx.font = '12px system-ui, -apple-system, Segoe UI, Roboto, sans-serif';
-      for (let i=0;i<=yTicks;i++){
-        const t = i/yTicks * maxVal;
-        const y = m.top + h - (t/maxVal)*h;
-        ctx.beginPath(); ctx.moveTo(m.left,y); ctx.lineTo(m.left+w,y); ctx.stroke();
-        ctx.fillText((t*100).toFixed(0)+'%', 6, y-2);
-      }
-
-      const n = labels.length;
-      const groupW = w/n;
-      const gap = Math.min(4, groupW*0.1);
-      const barW = (groupW-gap)/2;
-
-      ctx.strokeStyle = '#cfd6e4';
-      ctx.beginPath();
-      ctx.moveTo(m.left, m.top);
-      ctx.lineTo(m.left, m.top+h);
-      ctx.lineTo(m.left+w, m.top+h);
-      ctx.stroke();
-
-      const colorPlain = '#4e79a7';
-      const colorCipher = '#e15759';
-
-      for (let i=0;i<n;i++){
-        const x0 = m.left + i*groupW + gap/2;
-        const y1 = m.top + h - (s1[i]/maxVal)*h;
-        const y2 = m.top + h - (s2[i]/maxVal)*h;
-
-        ctx.fillStyle = colorPlain; ctx.fillRect(x0, y1, barW, (m.top+h)-y1);
-        ctx.fillStyle = colorCipher; ctx.fillRect(x0+barW, y2, barW, (m.top+h)-y2);
-
-        ctx.save();
-        ctx.translate(x0+barW, m.top+h+14);
-        ctx.rotate(-Math.PI/8);
-        ctx.fillStyle = '#2d3640';
-        ctx.textAlign = 'center';
-        ctx.fillText(labels[i], 0, 0);
-        ctx.restore();
-      }
-    }
-    function updateTable(tbody, labels, s1, s2){
-      tbody.innerHTML = '';
-      for (let i=0;i<labels.length;i++){
-        const tr = document.createElement('tr');
-        const tdL = document.createElement('td'); tdL.textContent = labels[i];
-        const tdP = document.createElement('td'); tdP.textContent = (s1[i]*100).toFixed(2);
-        const tdC = document.createElement('td'); tdC.textContent = (s2[i]*100).toFixed(2);
-        tr.append(tdL, tdP, tdC);
-        tbody.appendChild(tr);
-      }
-    }
-
-    // ---- Bind UI
-    const plainEl   = document.getElementById('plain-input');
-    const kEl       = document.getElementById('shift-input');
-    const cipherEl  = document.getElementById('cipher-input');
-
-    const analyzeBtn= document.getElementById('analyze-btn');
-    const encBtn    = document.getElementById('enc-btn');
-    const crackBtn  = document.getElementById('crack-btn');
-
-    const outWrap   = document.getElementById('cipher-output');
-    const outText   = document.getElementById('result-text');
-    const metaLine  = document.getElementById('meta-line');
-
-    const chartsWrap= document.getElementById('charts');
-    const canvas    = document.getElementById('hist-canvas');
-    const freqBody  = document.querySelector('#freq-table tbody');
-    const nPlainEl  = document.getElementById('n-plain');
-    const nCipherEl = document.getElementById('n-cipher');
-
-    let lastData = null;
-    let targetPlainRel = null;   // distribuzione del plaintext “originale”
-
-    function renderChartAndTable(plainRel, cipherRel, nPlain, nCipher){
-      chartsWrap.style.display = 'block';
-      drawHistogram(canvas, letters, plainRel, cipherRel);
-      updateTable(freqBody, letters, plainRel, cipherRel);
-      nPlainEl.textContent = nPlain;
-      nCipherEl.textContent = nCipher;
-      lastData = {s1: plainRel, s2: cipherRel};
-    }
-
-    // 1) Analizza distribuzione plaintext e salvala come target
-    analyzeBtn.addEventListener('click', () => {
-      const plainAZ = toAZ(plainEl.value);
-      const fPlain = freqAZ(plainAZ);
-      targetPlainRel = fPlain.rel.slice(); // memorizza target
-      renderChartAndTable(fPlain.rel, new Array(26).fill(0), fPlain.tot, 0);
-      outWrap.style.display = 'block';
-      outText.textContent = `Plaintext normalizzato (A–Z, N=${fPlain.tot})\n` + plainAZ.slice(0, 1000);
-      metaLine.textContent = 'Target fissato: userò questa distribuzione per il crack per similarità.';
-    });
-
-    // 2) Cifra con k (facoltativo)
-    encBtn.addEventListener('click', () => {
-      const k = parseInt(kEl.value || '0', 10);
-      const plainAZ = toAZ(plainEl.value);
-      const cipherAZ = caesarEncryptAZ(plainAZ, k);
-      cipherEl.value = cipherAZ;
-
-      const fPlain = freqAZ(plainAZ);
-      const fCipher = freqAZ(cipherAZ);
-      if (!targetPlainRel) targetPlainRel = fPlain.rel.slice(); // se non analizzato, usa questo
-
-      renderChartAndTable(fPlain.rel, fCipher.rel, fPlain.tot, fCipher.tot);
-      outWrap.style.display = 'block';
-      outText.textContent = `Ciphertext (k=${k}, N=${fCipher.tot})\n` + cipherAZ.slice(0, 1000);
-      metaLine.textContent = 'Distribuzioni aggiornate.';
-    });
-
-    // 3) Crack: se ho targetPlainRel uso la similarità, altrimenti fallback chi^2 vs italiano
-    crackBtn.addEventListener('click', () => {
-      let cipherAZ = toAZ(cipherEl.value);
-      if (!cipherAZ.length) cipherAZ = toAZ(plainEl.value); // comodità
-
-      const fCipher = freqAZ(cipherAZ);
-      if (fCipher.tot === 0) {
-        outWrap.style.display = 'block';
-        outText.textContent = 'Nessun ciphertext valido (A–Z) da analizzare.';
-        metaLine.textContent = '';
-        return;
-      }
-
-      let kBest, score, method;
-      if (targetPlainRel) {
-        ({k: kBest, score} = estimateShiftBySimilarity(fCipher.rel, targetPlainRel));
-        method = `similarità (dot) vs distribuzione plaintext — score=${score.toFixed(3)}`;
-      } else {
-        ({k: kBest, score} = estimateShiftByChiSquare(fCipher.rel));
-        method = `chi² vs italiano — chi²=${score.toFixed(3)}`;
-      }
-
-      const decrypted = caesarDecryptAZ(cipherAZ, kBest);
-      const fPlainGuess = freqAZ(decrypted);
-
-      renderChartAndTable(targetPlainRel || fPlainGuess.rel, fCipher.rel,
-                          (targetPlainRel ? 1 : fPlainGuess.tot), fCipher.tot);
-      outWrap.style.display = 'block';
-      outText.textContent =
-        `Crack completato: shift stimato k=${kBest}\n` +
-        `Plaintext stimato (N=${fPlainGuess.tot}):\n` + decrypted.slice(0, 1000);
-      metaLine.textContent = `Metodo: ${method}.`;
-    });
-
-    // Redraw on resize
-    window.addEventListener('resize', () => {
-      if (lastData) drawHistogram(canvas, letters, lastData.s1, lastData.s2);
-    });
-  })();
-</script>
-    <!-- =================== Fine script Caesar =================== -->
+    <script src="./homework2.js" defer></script>
   </body>
-</html> 
+</html>
