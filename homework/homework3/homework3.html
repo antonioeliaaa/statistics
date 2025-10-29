@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="color-scheme" content="light" />
+    <title>Homework 4 - RSA Encryption and Frequency Analysis</title>
+
+    <!-- Global stylesheet -->
+    <link rel="stylesheet" href="../../style.css" />
+
+    <!-- MathJax for formulas -->
+    <script>
+      window.MathJax = {
+        tex: { inlineMath: [['$', '$'], ['\\(', '\\)']] },
+        svg: { fontCache: 'global' }
+      };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+
+    <style>
+      .one-row { display:flex; gap:12px; align-items:flex-start; }
+      .one-row textarea { flex:1; min-width:280px; }
+      #hist-input, #hist-cipher {
+        width:100%; height:240px; display:block;
+        border-radius:8px; background:#fff; border:1px solid #e1e4ea;
+      }
+      .small-grid { display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+      .mini { font-size:0.9rem; color:#333; }
+      .top-row { display:flex; gap:18px; align-items:flex-start; }
+      .col { flex:1; }
+      .result-area pre { white-space:pre-wrap; word-break:break-word; font-family:inherit; padding:8px; background:#fbfbfc; border-radius:6px; border:1px solid #eee; }
+      .muted { color:#6b7280; }
+      .kbd { display:inline-block; padding:2px 6px; border-radius:6px; background:#f3f4f6; font-family:monospace; }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <h1>Statistics Antonio Elia</h1>
+      <p>ID: 2253126 — Homework 4</p>
+    </header>
+
+    <main>
+      <!-- INTRODUZIONE (le frasi richieste, in inglese) -->
+      <section role="region" aria-label="RSA Encryption Introduction">
+        <h2 class="question-title">RSA Encryption and Decryption</h2>
+        <p>
+          The <strong>RSA algorithm</strong>, developed by Rivest, Shamir, and Adleman in 1977,
+          is the cornerstone of modern asymmetric cryptography. It relies on the mathematical
+          properties of <em>modular arithmetic</em> and the computational difficulty of
+          <strong>prime factorization</strong>.
+        </p>
+
+        <h2 class="section-title">1. Key Generation</h2>
+        <p>
+          RSA uses two large prime numbers, $p$ and $q$, to construct the modulus $n = p \times q$.
+          The number $n$ is part of both the public and private keys.
+        </p>
+
+        <div class="sql panel">
+          <code>
+p = 13, q = 17 → n = 221<br>
+φ(n) = (p−1)(q−1) = 192
+          </code>
+        </div>
+
+        <p>
+          The next step is to choose a public exponent $e$ such that $1 < e < φ(n)$
+          and $e$ is coprime with $φ(n)$ (that is, $\gcd(e, φ(n)) = 1$).
+          Then the private exponent $d$ is computed as the <em>modular inverse</em> of $e$:
+        </p>
+
+        <p style="text-align:center; font-size:1.05rem;">
+          $$ d \cdot e \equiv 1 \pmod{φ(n)} $$
+        </p>
+
+        <p>
+          The public key is $(e, n)$ and the private key is $(d, n)$.
+          Using small primes (like 13 and 17) makes the arithmetic easy to illustrate,
+          though in practice $p$ and $q$ have hundreds of digits to ensure security.
+        </p>
+
+        <h2 class="section-title">2. Encryption and Decryption</h2>
+        <p>
+          Once the keys are generated, any plaintext message $M$ (represented as a number) is encrypted as:
+        </p>
+
+        <p style="text-align:center; font-size:1.05rem;">
+          $$ C = M^e \bmod n $$
+        </p>
+
+        <p>
+          The ciphertext $C$ can only be decrypted using the private key exponent $d$:
+        </p>
+
+        <p style="text-align:center; font-size:1.05rem;">
+          $$ M = C^d \bmod n $$
+        </p>
+
+        <p>
+          The two operations are inverse to each other because of Euler’s theorem:
+        </p>
+
+        <p style="text-align:center; font-size:1.05rem;">
+          $$ M^{e \cdot d} \equiv M \pmod{n} $$
+        </p>
+
+        <div class="hint">
+          <strong>Didactic simplification:</strong> In this exercise, letters A–Z are mapped to numbers 0–25.
+          Encryption and decryption are performed letter-by-letter using small primes, allowing us to
+          visually observe how RSA behaves as a <em>monoalphabetic substitution cipher</em>.
+        </div>
+
+        <h2 class="section-title">3. Frequency Analysis on RSA</h2>
+        <p>
+          Even though RSA is mathematically secure when implemented properly, using it on such a small
+          alphabet (A–Z) transforms it into a deterministic substitution cipher. This means that the
+          frequency distribution of ciphertext symbols still reflects that of the plaintext letters,
+          only permuted.
+        </p>
+
+        <p>
+          We can therefore attempt to <strong>crack</strong> the message through
+          <em>frequency analysis</em>, by matching the most frequent ciphertext symbols
+          to the most frequent letters in English (E, T, A, O, N, I, S...).
+        </p>
+
+        <div class="panel">
+          <p>
+            In this project we will:
+          </p>
+          <ul>
+            <li>Implement RSA encryption/decryption using small primes.</li>
+            <li>Encrypt a plaintext message letter-by-letter.</li>
+            <li>Compute the frequency of ciphertext symbols.</li>
+            <li>Attempt decryption by frequency matching and compare it to the true RSA decryption.</li>
+          </ul>
+        </div>
+
+        <h2 class="section-title">4. Example Parameters</h2>
+        <div class="sql panel">
+          <code>
+p = 13, q = 17 → n = 221<br>
+φ(n) = 192, e = 5, d = 77
+          </code>
+        </div>
+
+        <p class="muted">
+          With these parameters, we can easily encrypt letters 0–25 and analyze their distributions.
+          This small-scale simulation reveals why true RSA implementations must use large primes
+          and random padding to prevent frequency-based attacks.
+        </p>
+      </section>
+
+      <!-- 1) TEXT INPUT -->
+      <section class="panel" style="margin-top:18px;">
+        <h3 class="section-title">Text input</h3>
+        <div class="one-row">
+          <textarea id="text-input" rows="6" placeholder="Type or paste plaintext (A–Z only) — then click Analyze distribution">THIS IS A SECRET MESSAGE TO DEMONSTRATE RSA FREQUENCY ATTACK</textarea>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button id="analyze-btn" class="btn primary">📊 Analyze distribution</button>
+            <button id="clear-btn" class="btn">✖ Clear</button>
+            <div class="muted" style="max-width:160px;">Input is normalized to A–Z (non-letters removed).</div>
+          </div>
+        </div>
+
+        <!-- Letter distribution of input -->
+        <div style="margin-top:12px;">
+          <h4 class="section-title">Letter distribution of text input</h4>
+          <p class="muted">Blue = plaintext relative frequency.</p>
+          <canvas id="hist-input"></canvas>
+
+          <details style="margin-top:8px;">
+            <summary class="muted">Plain frequency table</summary>
+            <table class="datatable" id="freq-plain" style="margin-top:8px;">
+              <thead><tr><th>Letter</th><th>Count</th><th>Percent</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </details>
+        </div>
+      </section>
+
+      <!-- 2) KEY GENERATOR -->
+      <section class="panel" style="margin-top:18px;">
+        <h3 class="section-title">Key generator</h3>
+        <div class="small-grid">
+          <label class="stack" style="min-width:140px;">
+            <span style="font-weight:600;">p</span>
+            <input id="p-field" type="number" value="13" />
+          </label>
+          <label class="stack" style="min-width:140px;">
+            <span style="font-weight:600;">q</span>
+            <input id="q-field" type="number" value="17" />
+          </label>
+          <label class="stack" style="min-width:120px;">
+            <span style="font-weight:600;">e</span>
+            <input id="e-field" type="number" value="5" />
+          </label>
+          <div style="display:flex;gap:8px;">
+            <button id="pick-primes" class="btn secondary">Pick random primes</button>
+            <button id="recompute-key" class="btn">Recompute key</button>
+          </div>
+        </div>
+        <div class="mini" style="margin-top:8px;">
+          <span class="kbd">n</span> = <span id="n-val">-</span>
+          &nbsp;&nbsp; <span class="kbd">φ(n)</span> = <span id="phi-val">-</span>
+          &nbsp;&nbsp; <span class="kbd">d</span> = <span id="d-val">-</span>
+          <div class="muted" style="margin-top:6px;">Small primes for demo only. In practice use large primes and padding (OAEP).</div>
+        </div>
+      </section>
+
+      <!-- 3) ENCRYPTED TEXT + CIPHER DISTRIBUTION -->
+      <section class="panel" style="margin-top:18px;">
+        <h3 class="section-title">Encrypted text</h3>
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="flex:1;">
+            <label class="stack">
+              <span style="font-weight:600;">Ciphertext (numbers)</span>
+              <textarea id="cipher-output" rows="4" readonly placeholder="Ciphertext will appear here"></textarea>
+            </label>
+          </div>
+          <div style="width:320px;">
+            <div class="mini"><strong>Plain normalized:</strong> <span id="plain-norm">-</span></div>
+            <div class="mini"><strong>Plain length N:</strong> <span id="plain-n">0</span></div>
+            <div class="mini"><strong>Cipher unique symbols:</strong> <span id="cipher-unique">0</span></div>
+          </div>
+        </div>
+
+        <div style="margin-top:12px;">
+          <h4 class="section-title">Letter distribution of ciphertext</h4>
+          <p class="muted">Red = ciphertext relative frequency (aligned to A–Z via the didactic mapping).</p>
+          <canvas id="hist-cipher"></canvas>
+
+          <details style="margin-top:8px;">
+            <summary class="muted">Cipher frequency table</summary>
+            <table class="datatable" id="freq-cipher" style="margin-top:8px;">
+              <thead><tr><th>Letter</th><th>Cipher count</th><th>Cipher %</th></tr></thead>
+              <tbody></tbody>
+            </table>
+          </details>
+        </div>
+
+        <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;">
+          <button id="encrypt-btn" class="btn primary">🔐 Encrypt</button>
+          <button id="decrypt-freq-btn" class="btn secondary">🔎 Decrypt with frequency analysis (use plaintext distribution)</button>
+          <button id="decrypt-true-btn" class="btn">🔓 Decrypt (true, use d)</button>
+        </div>
+
+        <div class="top-row" style="margin-top:12px;">
+          <label class="stack col">
+            <span style="font-weight:600;">Guessed plaintext (frequency analysis)</span>
+            <textarea id="guessed-plain" rows="4" readonly placeholder="Run: Decrypt with frequency analysis"></textarea>
+          </label>
+          <label class="stack col">
+            <span style="font-weight:600;">True decrypted plaintext (using d)</span>
+            <textarea id="true-plain" rows="4" readonly placeholder="Run: Decrypt (true, use d)"></textarea>
+          </label>
+        </div>
+      </section>
+
+      <div style="margin-top:18px;">
+        <a class="button" href="../../index.html">⬅ Back to Home</a>
+      </div>
+    </main>
+
+    <footer>
+      <small>© 2025 Antonio Elia — 2253126 Statistics</small>
+    </footer>
+
+    
+    <script src="./homework3.js"></script>
+  </body>
+</html>
