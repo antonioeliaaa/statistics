@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="light" />
+  <title>Homework 4 — Law of Large Numbers (LLN) Simulation</title>
+
+  <link rel="stylesheet" href="../../style.css" />
+  <style>
+    .controls { display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; }
+    .controls .stack { min-width:160px; }
+    .row { display:flex; gap:16px; align-items:stretch; }
+    .col-left { flex:1; }
+    .col-right { width:340px; }
+    #traj-canvas, #hist-canvas {
+      width:100%; height:440px; display:block;
+      background:#fff; border:1px solid #e6e9ef; border-radius:12px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+    }
+    .muted { color:#6b7280; }
+    .mini { font-size:0.92rem; color:#333; }
+    .legend { display:flex; gap:12px; align-items:center; font-size:0.9rem; color:#333; }
+    .chip { display:inline-block; width:14px; height:14px; border-radius:3px; }
+    .playbar { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin-top:8px; }
+    .playbar .stack { min-width:160px; }
+    .pill { padding:2px 8px; border:1px solid #e6e9ef; border-radius:999px; font-size:0.85rem; color:#374151; }
+    .stat-grid { display:grid; grid-template-columns: 1fr 1fr; gap:8px; }
+    .switch { display:flex; align-items:center; gap:8px; }
+  </style>
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['\\(','\\)'], ['$', '$']] },
+      svg: { fontCache: 'global' }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
+</head>
+
+<body>
+  <header>
+    <h1>Statistics Antonio Elia</h1>
+    <p>ID: 2253126 — Homework 5</p>
+  </header>
+
+  <main>
+    <section class="panel">
+      <h2 class="question-title">Law of Large Numbers — Simulation</h2>
+      <p>
+        The <strong>Law of Large Numbers (LLN)</strong> states that the average of a large number of
+        independent random variables converges to their expected value.
+        In this simulation, we perform \(m\) independent trajectories of Bernoulli\((p)\) trials,
+        each consisting of \(n\) experiments.
+      </p>
+
+      <p>
+        For each trajectory, we compute the running relative frequency
+        \[
+          f_t = \frac{1}{t}\sum_{i=1}^{t} X_i, \quad t = 1, 2, \dots, n,
+        \]
+        where \(X_i \in \{0, 1\}\) represents a success or failure in the \(i\)-th trial.
+      </p>
+
+      <p>
+        As \(t\) increases, the empirical average \(f_t\) converges to the true probability of success \(p\).
+        On the left, multiple trajectories of \(f_t\) illustrate this convergence.
+        On the right, the vertical histogram shows the empirical distribution of \(f_t\) across all \(m\) trajectories
+        at a given time step \(t\). When \(t = n\), the distribution of \(f_n\) becomes sharply concentrated around \(p\),
+        demonstrating the Law of Large Numbers in action.
+      </p>
+    </section>
+
+    <section class="panel" aria-label="Controls">
+      <h3 class="section-title">Parameters</h3>
+      <div class="controls">
+        <label class="stack">
+          <span>Trajectories (m)</span>
+          <input id="m-input" type="number" min="1" step="1" value="150" />
+        </label>
+        <label class="stack">
+          <span>Trials per trajectory (n)</span>
+          <input id="n-input" type="number" min="20" step="20" value="1000" />
+        </label>
+        <label class="stack">
+          <span>Success probability (p)</span>
+          <input id="p-input" type="number" min="0" max="1" step="0.01" value="0.5" />
+        </label>
+        <label class="stack">
+          <span>Random seed (optional)</span>
+          <input id="seed-input" type="text" placeholder="leave empty for random" />
+        </label>
+        <div>
+          <button id="run-btn" class="btn primary">▶ Generate</button>
+          <button id="clear-btn" class="btn">✖ Clear</button>
+        </div>
+      </div>
+
+      <div class="playbar">
+        <div class="switch">
+          <button id="play-btn" class="btn">▶ Play</button>
+          <button id="pause-btn" class="btn">⏸ Pause</button>
+          <button id="reset-btn" class="btn">⟲ Reset</button>
+        </div>
+        <label class="stack" style="min-width:220px;">
+          <span>Speed (steps/frame)</span>
+          <input id="speed-input" type="range" min="1" max="50" value="10" />
+        </label>
+        <label class="stack" style="min-width:240px;">
+          <span>t</span>
+          <input id="t-input" type="range" min="1" max="1000" value="1" />
+        </label>
+        <div class="switch">
+          <input id="band-toggle" type="checkbox" />
+          <label for="band-toggle" class="pill">Show band around \(p\)</label>
+        </div>
+        <span class="pill">Current t: <span id="t-label">1</span> / <span id="n-label">1000</span></span>
+      </div>
+
+      <div class="legend" style="margin-top:8px;">
+        <span class="chip" style="background:#94a3b8;"></span> trajectories
+        <span class="chip" style="background:#16a34a;"></span> mean across trajectories
+        <span class="chip" style="background:#ef4444;"></span> reference line \(p\)
+      </div>
+    </section>
+
+    <section class="panel" aria-label="Plots">
+      <div class="row">
+        <div class="col-left">
+          <h3 class="section-title">Trajectories of \(f_t\)</h3>
+          <p class="muted">Grey = single trajectories; green = average across trajectories; red = reference \(p\). Use Play to animate t from 1 to n.</p>
+          <canvas id="traj-canvas"></canvas>
+        </div>
+        <div class="col-right">
+          <h3 class="section-title">Distribution of \(f_t\) (at current t)</h3>
+          <p class="muted">Vertical histogram of \(f_t\) across the \(m\) trajectories. At \(t=n\) this is the distribution of \(f_n\).</p>
+          <canvas id="hist-canvas"></canvas>
+          <div class="stat-grid" style="margin-top:8px;">
+            <div class="mini"><strong>\(\overline{f_t}\):</strong> <span id="mean-fn">-</span></div>
+            <div class="mini"><strong>sd(\(f_t\)):</strong> <span id="sd-fn">-</span></div>
+            <div class="mini"><strong>m:</strong> <span id="m-out">-</span></div>
+            <div class="mini"><strong>n:</strong> <span id="n-out">-</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div style="margin-top:18px;">
+      <a class="button" href="../../index.html">⬅ Back to Home</a>
+    </div>
+  </main>
+
+  <footer>
+    <small>© 2025 Antonio Elia — 2253126 Statistics</small>
+  </footer>
+
+  <script>
+    import("./homework4.js");
+
+  </script>
+</body>
+</html>
