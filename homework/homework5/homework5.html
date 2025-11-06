@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Homework 5 — Statistical Measures of Location & Dispersion</title>
+
+  <!-- Global stylesheet (lasciato com’era) -->
+  <link rel="stylesheet" href="../../style.css" />
+
+  <!-- MathJax per visualizzare le formule senza CSS extra -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+
+  <header>
+    <h1>Statistics — Antonio Elia</h1>
+    <p>Homework 5 — Student ID: 2253126</p>
+  </header>
+
+  <main>
+    <section role="region" aria-label="Overview of Statistical Concepts">
+
+      <h2 class="question-title">1. Introduction</h2>
+      <p>
+        In the field of statistics, two foundational ideas help us understand any dataset: 
+        <strong>measures of location</strong> and <strong>measures of dispersion</strong>.
+      </p>
+      <p>
+        Measures of location tell us where the "center" of the data lies, while measures of dispersion 
+        describe how much the data varies around that center.
+      </p>
+      <p class="muted">
+        These tools include the mean, median, mode, variance, standard deviation, and mean squared error (MSE) — 
+        each used to summarize different characteristics of a dataset.
+      </p>
+
+      <h2 class="section-title">2. Measures of Location (Central Tendency)</h2>
+      <p>
+        Measures of central tendency reduce a dataset to a single representative value. The most commonly used are:
+      </p>
+
+      <!-- SOLO delimitazione tabella: border/cellspacing/cellpadding -->
+      <div class="table-wrap">
+        <table class="datatable dense" aria-label="Measures of Central Tendency" border="1" cellspacing="0" cellpadding="6">
+          <thead>
+            <tr>
+              <th>Measure</th>
+              <th>Description / Formula</th>
+              <th>Advantages</th>
+              <th>Limitations</th>
+              <th>Used In</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Arithmetic Mean</td>
+              <td>\(\bar{x} = \frac{1}{n}\sum_{i=1}^{n} x_i\)</td>
+              <td>Easy to compute; uses all values</td>
+              <td>Highly affected by outliers</td>
+              <td>General data analysis, science, education</td>
+            </tr>
+            <tr>
+              <td>Median</td>
+              <td>Middle value in ordered dataset</td>
+              <td>Unaffected by outliers; robust</td>
+              <td>Does not consider magnitude of values</td>
+              <td>Income, real estate, skewed distributions</td>
+            </tr>
+            <tr>
+              <td>Mode</td>
+              <td>Most frequent value in dataset</td>
+              <td>Can be used with categorical data</td>
+              <td>May not exist or be unique</td>
+              <td>Marketing, customer segmentation</td>
+            </tr>
+            <tr>
+              <td>Geometric Mean</td>
+              <td>\(\left(\prod_{i=1}^{n} x_i\right)^{1/n}\)</td>
+              <td>Good for ratios, percentages</td>
+              <td>Cannot handle zeros or negatives</td>
+              <td>Financial growth rates, biology</td>
+            </tr>
+            <tr>
+              <td>Harmonic Mean</td>
+              <td>\(\displaystyle \frac{n}{\sum_{i=1}^{n} \frac{1}{x_i}}\)</td>
+              <td>Ideal for averaging rates</td>
+              <td>Extremely sensitive to small numbers</td>
+              <td>Engineering, physics, speeds</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    
+
+      <h2 class="section-title">3. Measures of Dispersion (Variability)</h2>
+      <p>Dispersion tells us how spread out the data points are, providing context to central tendency measures.</p>
+
+      <div class="table-wrap">
+        <table class="datatable dense" aria-label="Measures of Dispersion" border="1" cellspacing="0" cellpadding="6">
+          <thead>
+            <tr>
+              <th>Measure</th>
+              <th>Description / Formula</th>
+              <th>Advantages</th>
+              <th>Limitations</th>
+              <th>Used In</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Range</td>
+              <td>\(\max(x) - \min(x)\)</td>
+              <td>Simple and immediate</td>
+              <td>Ignores all other data values</td>
+              <td>Initial exploration</td>
+            </tr>
+            <tr>
+              <td>Variance (\(\sigma^2\))</td>
+              <td>\(\displaystyle \frac{1}{n}\sum_{i=1}^{n}\bigl(x_i - \bar{x}\bigr)^2\)</td>
+              <td>Key to many statistical models</td>
+              <td>Units are squared, not intuitive</td>
+              <td>Regression, probability, risk analysis</td>
+            </tr>
+            <tr>
+              <td>Standard Deviation</td>
+              <td>\(\displaystyle \sqrt{\frac{1}{n}\sum_{i=1}^{n}\bigl(x_i - \bar{x}\bigr)^2}\)</td>
+              <td>Same units as data</td>
+              <td>Also sensitive to outliers</td>
+              <td>Scientific studies, quality control</td>
+            </tr>
+            <tr>
+              <td>Interquartile Range</td>
+              <td>\(Q_3 - Q_1\)</td>
+              <td>Resistant to outliers</td>
+              <td>Doesn’t consider data tails</td>
+              <td>Boxplots, nonparametric analysis</td>
+            </tr>
+            <tr>
+              <td>Coefficient of Variation</td>
+              <td>\(\displaystyle \frac{\sigma}{\bar{x}} \times 100\%\)</td>
+              <td>Compares variability across scales</td>
+              <td>Not defined if \(\bar{x}=0\)</td>
+              <td>Finance, biology, process control</td>
+            </tr>
+            <tr>
+              <td>Mean Squared Error</td>
+              <td>\(\displaystyle \frac{1}{n} \sum_{i=1}^{n} \bigl(y_i - \hat{y}_i\bigr)^2\)</td>
+              <td>Measures accuracy of predictions</td>
+              <td>Squares errors; affected by outliers</td>
+              <td>Machine learning, forecasting</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title">4. Mean Squared Error (MSE) in Focus</h2>
+      <article class="panel">
+        <p>
+          The <strong>Mean Squared Error</strong> is not only a measure of variability, but also
+          a standard tool for evaluating prediction accuracy. It can be broken down into two components:
+          <em>variance</em> and <em>bias squared</em>.
+        </p>
+        <p>
+          \[
+            \mathrm{MSE}(\hat{\theta}) = \mathrm{Var}(\hat{\theta}) + \bigl(\mathrm{Bias}(\hat{\theta})\bigr)^2
+          \]
+        </p>
+        <p class="muted">
+          Models with low MSE provide predictions close to real data. High MSE indicates prediction instability or
+          significant estimation error.
+        </p>
+      </article>
+
+      <h2 class="section-title">5. Choosing the Right Measure</h2>
+
+      <div class="table-wrap">
+        <table class="datatable dense" aria-label="Recommendations Table" border="1" cellspacing="0" cellpadding="6">
+          <thead>
+            <tr>
+              <th>Scenario</th>
+              <th>Best Measures</th>
+              <th>Reason</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Normally distributed data</td>
+              <td>Mean, Standard Deviation</td>
+              <td>Accurately reflects center and spread</td>
+            </tr>
+            <tr>
+              <td>Skewed datasets</td>
+              <td>Median, IQR</td>
+              <td>Unaffected by extreme values</td>
+            </tr>
+            <tr>
+              <td>Financial returns</td>
+              <td>Geometric Mean, CV, MSE</td>
+              <td>Accounts for growth and variability</td>
+            </tr>
+            <tr>
+              <td>Scientific experiments</td>
+              <td>Mean, Variance</td>
+              <td>Basis for inference and uncertainty</td>
+            </tr>
+            <tr>
+              <td>Predictive modeling</td>
+              <td>MSE, RMSE</td>
+              <td>Directly measures prediction error</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section-title">6. Summary</h2>
+      <p>
+        Measures of location and dispersion are essential to understanding how data behave. 
+        While location measures like the mean or median tell us where the data cluster,
+        dispersion measures such as variance or MSE reveal how much variability lies beneath the surface.
+      </p>
+      <p>
+        The right measure depends on the shape of the data, presence of outliers, and analytical goals — 
+        whether we're describing data or building predictive models.
+      </p>
+
+      <a class="button" href="../../index.html">⬅ Back to Home</a>
+    </section>
+  </main>
+
+  <footer>
+    <small>© 2025 — Homework 5 by Antonio Elia (2253126)</small>
+  </footer>
+
+</body>
+</html>
