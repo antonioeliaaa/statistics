@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light" />
+  <title>Homework 6 — Online Mean & Variance (Welford’s Algorithm)</title>
+
+  <!-- Global stylesheet -->
+  <link rel="stylesheet" href="../../style.css" />
+
+  <!-- MathJax for LaTeX rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+</head>
+
+<body>
+
+  <header>
+    <h1>Statistics — Antonio Elia</h1>
+    <p>Homework 6 — Student ID: 2253126</p>
+  </header>
+
+  <main>
+    <section>
+
+      <h2>1. Analytical Task</h2>
+      <p>
+        In traditional batch algorithms, computing statistical measures — such as the arithmetic mean and variance — requires
+        processing the entire dataset. This becomes inefficient and potentially unstable for large datasets or streaming data.
+      </p>
+      <p>
+        In this homework, we derive the recurrence relations for online mean and variance, prove their correctness, and describe the corresponding <strong>online</strong> algorithms. These techniques allow incremental updates and avoid storing the full dataset.
+      </p>
+
+      <h2>2. Recurrence for the Arithmetic Mean</h2>
+      <p>Given a sequence of observations \(x_1, x_2, \dots, x_n\), the arithmetic mean is defined as:</p>
+      <p>\[
+        \bar{x}_n = \frac{1}{n} \sum_{i=1}^{n} x_i
+      \]</p>
+      <p>
+        Separating the last term and expressing the previous mean leads to:
+      </p>
+      <p>\[
+        \bar{x}_n = \frac{n - 1}{n} \bar{x}_{n-1} + \frac{1}{n} x_n = \bar{x}_{n-1} + \frac{x_n - \bar{x}_{n-1}}{n}
+      \]</p>
+      <p>This relation is the basis for the <em>online mean</em>.</p>
+
+      <h2>3. Recurrence for Variance — Welford’s Algorithm</h2>
+      <p>
+        The batch (sample) variance for \(n\) samples is:
+      </p>
+      <p>\[
+        s_n^2 = \frac{1}{n - 1} \sum_{i=1}^{n} (x_i - \bar{x}_n)^2
+      \]</p>
+      <p>
+        Instead of recomputing all past deviations, Welford’s method updates the second moment incrementally using:
+      </p>
+      <p>\[
+        \begin{aligned}
+          &\text{Let } n \leftarrow n + 1, \quad \delta = x_n - \bar{x}_{n-1} \\
+          &\bar{x}_n = \bar{x}_{n-1} + \frac{\delta}{n} \\
+          &M_{2,n} = M_{2,n-1} + \delta (x_n - \bar{x}_n) \\
+          &\text{Then } s_n^2 = \frac{M_{2,n}}{n - 1}
+        \end{aligned}
+      \]</p>
+      <p>
+        This formula is both time– and memory–efficient and minimizes numerical instability.
+      </p>
+
+      <h2>4. Algorithm (Pseudocode)</h2>
+
+      <h3>4.1 Online Mean</h3>
+      <pre>
+mu ← 0
+n ← 0
+for each new observation x:
+    n ← n + 1
+    mu ← mu + (x - mu) / n
+      </pre>
+
+      <h3>4.2 Welford’s Algorithm (Mean + Variance)</h3>
+      <pre>
+n ← 0
+mu ← 0
+M2 ← 0
+for each new observation x:
+    n ← n + 1
+    delta  ← x - mu
+    mu     ← mu + delta / n
+    delta2 ← x - mu
+    M2     ← M2 + delta * delta2
+
+mean  = mu
+var_p = M2 / n           (population variance)
+var_s = M2 / (n - 1)     (sample variance, if n > 1)
+      </pre>
+
+      <h2>5. Comparison with the Batch Method</h2>
+      <table border="1" cellspacing="0" cellpadding="6" aria-label="Comparison Table">
+        <thead>
+          <tr>
+            <th>Method</th>
+            <th>Requirements</th>
+            <th>Drawbacks</th>
+            <th>Advantages</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Batch (classic)</td>
+            <td>Full dataset stored in memory</td>
+            <td>Slow, risk of catastrophic cancellation, large memory</td>
+            <td>Simple to implement</td>
+          </tr>
+          <tr>
+            <td>Online (Welford)</td>
+            <td>Only mean, M2, n</td>
+            <td>Requires recurrence understanding</td>
+            <td>Stable, fast, constant memory</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>6. Step-by-step Example (Welford)</h2>
+      <p>Applying Welford’s algorithm to the dataset \([10, 13, 12, 11]\):</p>
+      <table border="1" cellspacing="0" cellpadding="6" aria-label="Step by Step Table">
+        <thead>
+          <tr>
+            <th>n</th>
+            <th>x</th>
+            <th>\(\delta\)</th>
+            <th>\(\bar{x}\)</th>
+            <th>\(M_2\)</th>
+            <th>Sample Variance</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>10</td><td>10</td><td>10</td><td>0</td><td>–</td></tr>
+          <tr><td>2</td><td>13</td><td>3</td><td>11.5</td><td>4.5</td><td>4.5</td></tr>
+          <tr><td>3</td><td>12</td><td>0.5</td><td>11.67</td><td>4.67</td><td>2.33</td></tr>
+          <tr><td>4</td><td>11</td><td>-0.67</td><td>11.5</td><td>5.0</td><td>1.67</td></tr>
+        </tbody>
+      </table>
+
+      <h2>7. Conclusions</h2>
+      <p>
+        Recurrence formulas make it possible to efficiently compute mean and variance <strong>online</strong>, without storing past data.
+        Welford’s algorithm, in particular, ensures numerical robustness and eliminates problems such as propagation of rounding
+        errors and overflow.
+      </p>
+
+      <a class="button" href="../../index.html">⬅ Back to Home</a>
+
+    </section>
+  </main>
+
+  <footer>
+    <small>© 2025 — Homework 6 by Antonio Elia (2253126)</small>
+  </footer>
+
+</body>
+</html>
