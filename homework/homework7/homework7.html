@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>Homework 6 — Online Mean & Variance (Welford’s Algorithm)</title>
+  <title>Homework 7 — Random Walk, Security Breaches & Binomial Distribution</title>
 
   <!-- Global stylesheet -->
   <link rel="stylesheet" href="../../style.css" />
@@ -17,136 +17,253 @@
 
   <header>
     <h1>Statistics — Antonio Elia</h1>
-    <p>Homework 6 — Student ID: 2253126</p>
+    <p>Homework 7 — Student ID: 2253126</p>
   </header>
 
   <main>
     <section>
 
-      <h2>1. Analytical Task</h2>
+      <h2>1. Problem Description</h2>
       <p>
-        In traditional batch algorithms, computing statistical measures — such as the arithmetic mean and variance — requires
-        processing the entire dataset. This becomes inefficient and potentially unstable for large datasets or streaming data.
+        We consider a server that receives weekly security updates for \( n \) weeks and is attacked every week by
+        \( m \) independent attackers. Each attacker can breach the system with probability \( p \).
       </p>
       <p>
-        In this homework, we derive the recurrence relations for online mean and variance, prove their correctness, and describe the corresponding <strong>online</strong> algorithms. These techniques allow incremental updates and avoid storing the full dataset.
+        For each week, we assign a score:
       </p>
+      <ul>
+        <li>\(+1\) if the server remains secure in that week,</li>
+        <li>\(-1\) if the server is breached at least once in that week.</li>
+      </ul>
+      <p>
+        The weekly scores are then summed over time to form a cumulative process that can be interpreted as a
+        <strong>random walk</strong>. The goal of this homework is:
+      </p>
+      <ul>
+        <li>to simulate many random trajectories of this cumulative score,</li>
+        <li>to count how many trajectories reach each possible final score,</li>
+        <li>to compare the empirical distribution of final scores with the corresponding
+          <strong>Binomial distribution</strong> and observe convergence as \( n \) and the number of simulated
+          trajectories grow.</li>
+      </ul>
 
-      <h2>2. Recurrence for the Arithmetic Mean</h2>
-      <p>Given a sequence of observations \(x_1, x_2, \dots, x_n\), the arithmetic mean is defined as:</p>
-      <p>\[
-        \bar{x}_n = \frac{1}{n} \sum_{i=1}^{n} x_i
-      \]</p>
+      <h2>2. Weekly Breach Probability</h2>
       <p>
-        Separating the last term and expressing the previous mean leads to:
-      </p>
-      <p>\[
-        \bar{x}_n = \frac{n - 1}{n} \bar{x}_{n-1} + \frac{1}{n} x_n = \bar{x}_{n-1} + \frac{x_n - \bar{x}_{n-1}}{n}
-      \]</p>
-      <p>This relation is the basis for the <em>online mean</em>.</p>
-
-      <h2>3. Recurrence for Variance — Welford’s Algorithm</h2>
-      <p>
-        The batch (sample) variance for \(n\) samples is:
-      </p>
-      <p>\[
-        s_n^2 = \frac{1}{n - 1} \sum_{i=1}^{n} (x_i - \bar{x}_n)^2
-      \]</p>
-      <p>
-        Instead of recomputing all past deviations, Welford’s method updates the second moment incrementally using:
+        Each week, there are \( m \) attackers. Each attacker independently breaches the system with probability \( p \).
+        The probability that a <em>single</em> attacker does <strong>not</strong> breach is:
       </p>
       <p>\[
-        \begin{aligned}
-          &\text{Let } n \leftarrow n + 1, \quad \delta = x_n - \bar{x}_{n-1} \\
-          &\bar{x}_n = \bar{x}_{n-1} + \frac{\delta}{n} \\
-          &M_{2,n} = M_{2,n-1} + \delta (x_n - \bar{x}_n) \\
-          &\text{Then } s_n^2 = \frac{M_{2,n}}{n - 1}
-        \end{aligned}
+        \mathbb{P}(\text{no breach by a single attacker}) = 1 - p
       \]</p>
       <p>
-        This formula is both time– and memory–efficient and minimizes numerical instability.
+        Since the \( m \) attackers act independently, the probability that <em>none</em> of them breaches is:
+      </p>
+      <p>\[
+        \mathbb{P}(\text{no breach in a week}) = (1 - p)^m
+      \]</p>
+      <p>
+        Therefore, the weekly probability that the server is breached at least once is:
+      </p>
+      <p>\[
+        q = \mathbb{P}(\text{breach in a week}) = 1 - (1 - p)^m
+      \]</p>
+
+      <h2>3. Random Walk Formulation</h2>
+      <p>
+        Define the weekly score \( X_i \) for week \( i \) as:
+      </p>
+      <p>\[
+        X_i =
+        \begin{cases}
+          +1, & \text{if week } i \text{ is secure} \\
+          -1, & \text{if week } i \text{ has a breach}
+        \end{cases}
+      \]</p>
+      <p>
+        Assuming independence from week to week and using the weekly breach probability \( q \), we have:
+      </p>
+      <p>\[
+        \mathbb{P}(X_i = -1) = q, \quad
+        \mathbb{P}(X_i = +1) = 1 - q
+      \]</p>
+      <p>
+        The cumulative score after \( n \) weeks is the random walk:
+      </p>
+      <p>\[
+        S_n = \sum_{i=1}^{n} X_i
+      \]</p>
+      <p>
+        Let \( B \) be the number of breached weeks in a trajectory (i.e., the number of \( X_i = -1 \)). Then:
+      </p>
+      <ul>
+        <li>The number of secure weeks is \( n - B \).</li>
+        <li>The final score is:
+          \[
+            S_n = (+1)\cdot(n-B) + (-1)\cdot B = n - 2B
+          \]
+        </li>
+      </ul>
+      <p>
+        Since each week has a breach with probability \( q \) independently,
+        the random variable \( B \) is:
+      </p>
+      <p>\[
+        B \sim \text{Binomial}(n, q)
+      \]</p>
+      <p>
+        Hence, the final score \( S_n \) takes values in:
+      </p>
+      <p>\[
+        S_n \in \{-n, -n+2, \dots, n-2, n\}
+      \]</p>
+      <p>
+        and its distribution is obtained by mapping the Binomial probabilities of \( B \) to the corresponding scores
+        \( S_n = n - 2B \).
       </p>
 
-      <h2>4. Algorithm (Pseudocode)</h2>
-
-      <h3>4.1 Online Mean</h3>
-      <pre>
-mu ← 0
-n ← 0
-for each new observation x:
-    n ← n + 1
-    mu ← mu + (x - mu) / n
-      </pre>
-
-      <h3>4.2 Welford’s Algorithm (Mean + Variance)</h3>
-      <pre>
-n ← 0
-mu ← 0
-M2 ← 0
-for each new observation x:
-    n ← n + 1
-    delta  ← x - mu
-    mu     ← mu + delta / n
-    delta2 ← x - mu
-    M2     ← M2 + delta * delta2
-
-mean  = mu
-var_p = M2 / n           (population variance)
-var_s = M2 / (n - 1)     (sample variance, if n > 1)
-      </pre>
-
-      <h2>5. Comparison with the Batch Method</h2>
-      <table border="1" cellspacing="0" cellpadding="6" aria-label="Comparison Table">
-        <thead>
-          <tr>
-            <th>Method</th>
-            <th>Requirements</th>
-            <th>Drawbacks</th>
-            <th>Advantages</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Batch (classic)</td>
-            <td>Full dataset stored in memory</td>
-            <td>Slow, risk of catastrophic cancellation, large memory</td>
-            <td>Simple to implement</td>
-          </tr>
-          <tr>
-            <td>Online (Welford)</td>
-            <td>Only mean, M2, n</td>
-            <td>Requires recurrence understanding</td>
-            <td>Stable, fast, constant memory</td>
-          </tr>
-        </tbody>
-      </table>
-
-      <h2>6. Step-by-step Example (Welford)</h2>
-      <p>Applying Welford’s algorithm to the dataset \([10, 13, 12, 11]\):</p>
-      <table border="1" cellspacing="0" cellpadding="6" aria-label="Step by Step Table">
-        <thead>
-          <tr>
-            <th>n</th>
-            <th>x</th>
-            <th>\(\delta\)</th>
-            <th>\(\bar{x}\)</th>
-            <th>\(M_2\)</th>
-            <th>Sample Variance</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>10</td><td>10</td><td>10</td><td>0</td><td>–</td></tr>
-          <tr><td>2</td><td>13</td><td>3</td><td>11.5</td><td>4.5</td><td>4.5</td></tr>
-          <tr><td>3</td><td>12</td><td>0.5</td><td>11.67</td><td>4.67</td><td>2.33</td></tr>
-          <tr><td>4</td><td>11</td><td>-0.67</td><td>11.5</td><td>5.0</td><td>1.67</td></tr>
-        </tbody>
-      </table>
-
-      <h2>7. Conclusions</h2>
+      <h2>4. Simulation Design</h2>
       <p>
-        Recurrence formulas make it possible to efficiently compute mean and variance <strong>online</strong>, without storing past data.
-        Welford’s algorithm, in particular, ensures numerical robustness and eliminates problems such as propagation of rounding
-        errors and overflow.
+        To numerically investigate the behavior of this random walk, we proceed as follows:
+      </p>
+      <ol>
+        <li>Fix \( n \) (number of weeks), \( m \) (number of attackers), \( p \) (per–attacker breach probability),
+          and the number of simulated trajectories (trials).</li>
+        <li>Compute
+          \[
+            q = 1 - (1 - p)^m
+          \]
+          as the effective weekly breach probability for the server.</li>
+        <li>For each trajectory:
+          <ul>
+            <li>Start from \( S_0 = 0 \).</li>
+            <li>For each week \( i = 1, \dots, n \):
+              <ul>
+                <li>Generate a Bernoulli event with probability \( q \).</li>
+                <li>If a breach occurs, set \( X_i = -1 \), else \( X_i = +1 \).</li>
+                <li>Update the cumulative score:
+                  \[
+                    S_i = S_{i-1} + X_i
+                  \]
+                </li>
+              </ul>
+            </li>
+            <li>Record the final value \( S_n \) and (optionally) the whole path \( (S_1, \dots, S_n) \).</li>
+          </ul>
+        </li>
+        <li>Repeat for all trajectories and compute:
+          <ul>
+            <li>the empirical frequency of each final score \( s \),</li>
+            <li>the theoretical probability \( \mathbb{P}(S_n = s) \) via the Binomial model,</li>
+            <li>a divergence measure, such as the total variation distance, to quantify convergence.</li>
+          </ul>
+        </li>
+      </ol>
+
+      <h2>5. Interactive Simulation</h2>
+      <p>
+        The panel below allows you to choose the parameters \( n \), \( m \), \( p \) and the number of simulated trajectories.
+        The script then:
+      </p>
+      <ul>
+        <li>simulates the random walk trajectories of the server's cumulative score,</li>
+        <li>builds an empirical histogram of the final scores \( S_n \),</li>
+        <li>overlays the theoretical distribution derived from the Binomial law for \( B \),</li>
+        <li>plots a few sample trajectories together with their mean path.</li>
+      </ul>
+
+      <div class="controls">
+        <p>
+          <label for="weeks"><strong>Weeks (n):</strong></label>
+          <input id="weeks" type="number" min="1" value="50" />
+        </p>
+
+        <p>
+          <label for="attackers"><strong>Attackers (m):</strong></label>
+          <input id="attackers" type="number" min="1" value="3" />
+        </p>
+
+        <p>
+          <label for="p"><strong>Per-attacker breach probability (p):</strong></label>
+          <input id="p" type="number" min="0" max="1" step="0.001" value="0.05" />
+        </p>
+
+        <p>
+          <label for="trials"><strong>Trajectories (trials):</strong></label>
+          <input id="trials" type="number" min="1" value="5000" />
+        </p>
+
+        <button id="simulateButton">Simulate</button>
+      </div>
+
+      <p id="q-display"><em>Weekly breach probability \( q = 1 - (1 - p)^m \)</em></p>
+      <p id="q-value"></p>
+      <p id="tv-distance"><strong>TV distance (empirical vs theoretical):</strong> —</p>
+
+      <h2>6. Distribution of Final Scores</h2>
+      <p>
+        The histogram below shows the <strong>empirical distribution</strong> of the final scores \( S_n \) across
+        all simulated trajectories. Each bar corresponds to one possible value of \( S_n \in \{-n, -n+2, \dots, n\} \)
+        and its height is the relative frequency:
+      </p>
+      <p>\[
+        \hat{p}(s) = \frac{\#\{\text{trajectories with } S_n = s\}}{\text{number of trajectories}}
+      \]</p>
+      <p>
+        The superimposed line represents the <strong>theoretical distribution</strong> obtained from
+        \( B \sim \text{Binomial}(n, q) \) via the transformation \( S_n = n - 2B \).
+        As \( n \) and the number of trajectories increase, the empirical histogram converges towards this theoretical
+        distribution.
+      </p>
+
+      <canvas id="histChart"></canvas>
+
+      <h2>7. Sample Random Walk Trajectories</h2>
+      <p>
+        The following plot displays a small set of simulated random walk trajectories:
+      </p>
+      <ul>
+        <li>each thin line is a trajectory
+          \[
+            S_k = \sum_{i=1}^{k} X_i, \quad k = 1, \dots, n,
+          \]
+        </li>
+        <li>the thicker line represents the <strong>mean trajectory</strong>, i.e. the empirical average of
+          \( S_k \) over all simulated runs.</li>
+      </ul>
+      <p>
+        Theoretical expectation for the random walk at step \( k \) is given by:
+      </p>
+      <p>\[
+        \mathbb{E}[X_i] = (1 - q)\cdot(+1) + q\cdot(-1) = 1 - 2q,
+        \quad
+        \mathbb{E}[S_k] = k \cdot (1 - 2q).
+      \]</p>
+      <p>
+        This shows that the random walk is biased: if \( q &gt; 0.5 \) the drift is negative (breaches more likely),
+        while if \( q &lt; 0.5 \) the drift is positive (secure weeks more likely).
+      </p>
+
+      <canvas id="trajChart"></canvas>
+
+      <h2>8. Conclusions</h2>
+      <p>
+        By modelling the weekly security outcome as a biased random walk, we obtain a simple and powerful probabilistic
+        description of the system:
+      </p>
+      <ul>
+        <li>the random walk steps are determined by the effective breach probability
+          \[
+            q = 1 - (1 - p)^m,
+          \]
+        </li>
+        <li>the total number of breaches in \( n \) weeks follows a Binomial distribution,</li>
+        <li>the final cumulative score \( S_n \) is a linear transformation of this Binomial random variable,</li>
+        <li>Monte Carlo simulation confirms that the empirical distribution of \( S_n \) converges to the theoretical
+          Binomial-based distribution as \( n \) and the number of trajectories grow.</li>
+      </ul>
+      <p>
+        This framework connects a cybersecurity scenario with classical probabilistic tools such as random walks and the
+        Binomial distribution, and illustrates how simulation can be used to validate analytical results.
       </p>
 
       <a class="button" href="../../index.html">⬅ Back to Home</a>
@@ -155,8 +272,238 @@ var_s = M2 / (n - 1)     (sample variance, if n > 1)
   </main>
 
   <footer>
-    <small>© 2025 — Homework 6 by Antonio Elia (2253126)</small>
+    <small>© 2025 — Homework 7 by Antonio Elia (2253126)</small>
   </footer>
+
+  <!-- Chart.js for plots -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const weeksInput = document.getElementById('weeks');
+    const attackersInput = document.getElementById('attackers');
+    const pInput = document.getElementById('p');
+    const trialsInput = document.getElementById('trials');
+    const simulateButton = document.getElementById('simulateButton');
+
+    const qValue = document.getElementById('q-value');
+    const tvDistanceEl = document.getElementById('tv-distance');
+
+    const histCanvas = document.getElementById('histChart');
+    const trajCanvas = document.getElementById('trajChart');
+
+    let histChart = null;
+    let trajChart = null;
+
+    function computeWeeklyBreachProbability(m, p) {
+      // q = 1 - (1 - p)^m
+      return 1 - Math.pow(1 - p, m);
+    }
+
+    function binomialPMF(n, k, q) {
+      if (k < 0 || k > n) return 0;
+      // compute "n choose k" in a relatively stable way
+      k = Math.min(k, n - k);
+      let coeff = 1;
+      for (let i = 1; i <= k; i++) {
+        coeff *= (n + 1 - i) / i;
+      }
+      return coeff * Math.pow(q, k) * Math.pow(1 - q, n - k);
+    }
+
+    function simulate(n, m, p, trials) {
+      const q = computeWeeklyBreachProbability(m, p);
+      const finalScores = new Array(trials);
+      const maxStoredTraj = 8; // number of individual trajectories to plot
+      const trajectories = [];
+      const meanPath = new Array(n).fill(0);
+
+      for (let t = 0; t < trials; t++) {
+        let cum = 0;
+        let thisTraj = [];
+
+        for (let k = 0; k < n; k++) {
+          const breached = Math.random() < q;
+          const X = breached ? -1 : 1;
+          cum += X;
+
+          if (t < maxStoredTraj) {
+            thisTraj.push(cum);
+          }
+          meanPath[k] += cum;
+        }
+
+        if (t < maxStoredTraj) {
+          trajectories.push(thisTraj);
+        }
+
+        finalScores[t] = cum;
+      }
+
+      for (let k = 0; k < n; k++) {
+        meanPath[k] /= trials;
+      }
+
+      return { q, finalScores, trajectories, meanPath };
+    }
+
+    function buildHistogramData(n, finalScores, q) {
+      // possible scores: -n, -n+2, ..., n
+      const scores = [];
+      for (let s = -n; s <= n; s += 2) {
+        scores.push(s);
+      }
+
+      const counts = new Array(scores.length).fill(0);
+      finalScores.forEach(s => {
+        const idx = (s + n) / 2;
+        if (idx >= 0 && idx < counts.length) {
+          counts[idx]++;
+        }
+      });
+
+      const trials = finalScores.length;
+      const empirical = counts.map(c => c / trials);
+
+      const theoretical = scores.map(s => {
+        const B = (n - s) / 2; // number of breaches corresponding to S_n = s
+        return binomialPMF(n, B, q);
+      });
+
+      let tv = 0;
+      for (let i = 0; i < scores.length; i++) {
+        tv += Math.abs(empirical[i] - theoretical[i]);
+      }
+      tv *= 0.5; // total variation distance
+
+      return { scores, empirical, theoretical, tv };
+    }
+
+    function updateHistogramChart(scores, empirical, theoretical) {
+      const labels = scores.map(s => s.toString());
+
+      if (histChart) {
+        histChart.destroy();
+      }
+
+      histChart = new Chart(histCanvas, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Empirical P(S_n = s)',
+              data: empirical
+            },
+            {
+              type: 'line',
+              label: 'Theoretical (Binomial-based)',
+              data: theoretical
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: { display: true, text: 'Final score S_n' }
+            },
+            y: {
+              title: { display: true, text: 'Probability' },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function updateTrajectoriesChart(trajectories, meanPath) {
+      const n = meanPath.length;
+      const labels = [];
+      for (let k = 1; k <= n; k++) {
+        labels.push(k.toString());
+      }
+
+      const datasets = trajectories.map((traj, idx) => ({
+        label: 'Path ' + (idx + 1),
+        data: traj,
+        fill: false,
+        tension: 0
+      }));
+
+      datasets.push({
+        label: 'Mean trajectory',
+        data: meanPath,
+        fill: false,
+        borderWidth: 3
+      });
+
+      if (trajChart) {
+        trajChart.destroy();
+      }
+
+      trajChart = new Chart(trajCanvas, {
+        type: 'line',
+        data: {
+          labels: labels,
+          datasets: datasets
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: true
+            }
+          },
+          scales: {
+            x: {
+              title: { display: true, text: 'Week' }
+            },
+            y: {
+              title: { display: true, text: 'Cumulative score S_k' }
+            }
+          }
+        }
+      });
+    }
+
+    function runSimulation() {
+      const n = parseInt(weeksInput.value, 10);
+      const m = parseInt(attackersInput.value, 10);
+      const p = parseFloat(pInput.value);
+      const trials = parseInt(trialsInput.value, 10);
+
+      if (!Number.isFinite(n) || n <= 0) {
+        alert('n must be a positive integer.');
+        return;
+      }
+      if (!Number.isFinite(m) || m <= 0) {
+        alert('m must be a positive integer.');
+        return;
+      }
+      if (!Number.isFinite(p) || p < 0 || p > 1) {
+        alert('p must be in [0, 1].');
+        return;
+      }
+      if (!Number.isFinite(trials) || trials <= 0) {
+        alert('Number of trajectories must be positive.');
+        return;
+      }
+
+      const { q, finalScores, trajectories, meanPath } = simulate(n, m, p, trials);
+      const { scores, empirical, theoretical, tv } = buildHistogramData(n, finalScores, q);
+
+      qValue.textContent = 'q = ' + q.toFixed(3);
+      tvDistanceEl.innerHTML = '<strong>TV distance (empirical vs theoretical):</strong> ' + tv.toFixed(3);
+
+      updateHistogramChart(scores, empirical, theoretical);
+      updateTrajectoriesChart(trajectories, meanPath);
+    }
+
+    simulateButton.addEventListener('click', runSimulation);
+
+    // Run once with default parameters
+    runSimulation();
+  </script>
 
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>Homework 6 — Online Mean & Variance (Welford’s Algorithm)</title>
+  <title>Homework 8 — Bernoulli Processes, Random Walks & Combinatorics</title>
 
   <!-- Global stylesheet -->
   <link rel="stylesheet" href="../../style.css" />
@@ -17,136 +17,336 @@
 
   <header>
     <h1>Statistics — Antonio Elia</h1>
-    <p>Homework 6 — Student ID: 2253126</p>
+    <p>Homework 8 — Student ID: 2253126</p>
   </header>
 
   <main>
     <section>
 
-      <h2>1. Analytical Task</h2>
+      <h2>1. Context and Goal</h2>
       <p>
-        In traditional batch algorithms, computing statistical measures — such as the arithmetic mean and variance — requires
-        processing the entire dataset. This becomes inefficient and potentially unstable for large datasets or streaming data.
+        This homework is conceptually connected to two previous activities:
       </p>
+      <ul>
+        <li>the simulation of a <strong>Bernoulli process</strong> and the Law of Large Numbers (LLN),</li>
+        <li>the simulation of a <strong>server security random walk</strong> (Homework 7), where weekly outcomes are
+          \((+1)\) for secure and \((-1)\) for breached weeks.</li>
+      </ul>
       <p>
-        In this homework, we derive the recurrence relations for online mean and variance, prove their correctness, and describe the corresponding <strong>online</strong> algorithms. These techniques allow incremental updates and avoid storing the full dataset.
+        The aim of this homework is to:
       </p>
+      <ul>
+        <li>discuss analogies and differences between the simple Bernoulli LLN simulation and the server random walk,</li>
+        <li>highlight how both are based on the same probabilistic structure,</li>
+        <li>illustrate the relationships with <strong>binomial coefficients</strong>, <strong>Pascal’s triangle</strong>,
+          <strong>binomial expansion</strong>, the <strong>Fibonacci sequence</strong> and related
+          <strong>combinatorial coefficients</strong>.</li>
+      </ul>
 
-      <h2>2. Recurrence for the Arithmetic Mean</h2>
-      <p>Given a sequence of observations \(x_1, x_2, \dots, x_n\), the arithmetic mean is defined as:</p>
-      <p>\[
-        \bar{x}_n = \frac{1}{n} \sum_{i=1}^{n} x_i
-      \]</p>
+      <h2>2. Bernoulli Process and Law of Large Numbers</h2>
       <p>
-        Separating the last term and expressing the previous mean leads to:
-      </p>
-      <p>\[
-        \bar{x}_n = \frac{n - 1}{n} \bar{x}_{n-1} + \frac{1}{n} x_n = \bar{x}_{n-1} + \frac{x_n - \bar{x}_{n-1}}{n}
-      \]</p>
-      <p>This relation is the basis for the <em>online mean</em>.</p>
-
-      <h2>3. Recurrence for Variance — Welford’s Algorithm</h2>
-      <p>
-        The batch (sample) variance for \(n\) samples is:
+        In the LLN homework, we considered a sequence of independent Bernoulli trials:
       </p>
       <p>\[
-        s_n^2 = \frac{1}{n - 1} \sum_{i=1}^{n} (x_i - \bar{x}_n)^2
+        Y_1, Y_2, \dots, Y_n,\quad Y_i \sim \text{Bernoulli}(p),
       \]</p>
       <p>
-        Instead of recomputing all past deviations, Welford’s method updates the second moment incrementally using:
+        where each trial represents a <em>success</em> (1) with probability \(p\) and a <em>failure</em> (0) with
+        probability \(1-p\).
+      </p>
+      <p>
+        The cumulative number of successes after \(n\) trials is:
       </p>
       <p>\[
-        \begin{aligned}
-          &\text{Let } n \leftarrow n + 1, \quad \delta = x_n - \bar{x}_{n-1} \\
-          &\bar{x}_n = \bar{x}_{n-1} + \frac{\delta}{n} \\
-          &M_{2,n} = M_{2,n-1} + \delta (x_n - \bar{x}_n) \\
-          &\text{Then } s_n^2 = \frac{M_{2,n}}{n - 1}
-        \end{aligned}
+        B_n = \sum_{i=1}^n Y_i,
       \]</p>
       <p>
-        This formula is both time– and memory–efficient and minimizes numerical instability.
+        and the sample mean is:
+      </p>
+      <p>\[
+        \bar{Y}_n = \frac{B_n}{n}.
+      \]</p>
+      <p>
+        The <strong>Law of Large Numbers</strong> states that:
+      </p>
+      <p>\[
+        \bar{Y}_n \xrightarrow[n \to \infty]{} p
+      \]</p>
+      <p>
+        i.e. the empirical frequency of successes converges to the true probability \(p\) as the number of trials grows.
       </p>
 
-      <h2>4. Algorithm (Pseudocode)</h2>
+      <h2>3. Server Random Walk (Homework 7) as a Bernoulli Process</h2>
+      <p>
+        In Homework 7, we modelled the weekly status of a server under attack. For each week \(i\) we defined a random
+        variable:
+      </p>
+      <p>\[
+        X_i =
+        \begin{cases}
+          +1, & \text{if the server remains secure in week } i, \\
+          -1, & \text{if the server is breached in week } i.
+        \end{cases}
+      \]</p>
+      <p>
+        Assuming independence between weeks, we have:
+      </p>
+      <p>\[
+        \mathbb{P}(X_i = -1) = q, \quad \mathbb{P}(X_i = +1) = 1 - q,
+      \]</p>
+      <p>
+        where the effective weekly breach probability is:
+      </p>
+      <p>\[
+        q = 1 - (1 - p)^m,
+      \]</p>
+      <p>
+        with \(p\) the breach probability of a single attacker and \(m\) the number of attackers.
+      </p>
+      <p>
+        The cumulative score after \(n\) weeks is the random walk:
+      </p>
+      <p>\[
+        S_n = \sum_{i=1}^n X_i.
+      \]</p>
+      <p>
+        Let \(B_n\) be the number of breached weeks (i.e. the number of times \(X_i = -1\)) over \(n\) weeks. Then:
+      </p>
+      <p>\[
+        B_n \sim \text{Binomial}(n, q), \qquad
+        S_n = n - 2B_n,
+      \]</p>
+      <p>
+        so the random walk is just a transformed Binomial variable. The LLN appears again in the limit:
+      </p>
+      <p>\[
+        \frac{S_n}{n} = \frac{n - 2B_n}{n} = 1 - 2\frac{B_n}{n}
+        \xrightarrow[n \to \infty]{} 1 - 2q
+      \]</p>
+      <p>
+        because \( \tfrac{B_n}{n} \to q \) by the LLN for Bernoulli trials.
+      </p>
 
-      <h3>4.1 Online Mean</h3>
-      <pre>
-mu ← 0
-n ← 0
-for each new observation x:
-    n ← n + 1
-    mu ← mu + (x - mu) / n
-      </pre>
+      <h2>4. Analogies Between the Two Simulations</h2>
+      <p>
+        Both the Bernoulli LLN experiment and the server random walk are built on the same core ingredients:
+      </p>
+      <ul>
+        <li>a sequence of independent Bernoulli trials,</li>
+        <li>a Binomial distribution obtained by summing these trials,</li>
+        <li>an empirical quantity (mean or normalized sum) that converges to a deterministic limit.</li>
+      </ul>
+      <p>
+        In both cases:
+      </p>
+      <ul>
+        <li>each trial/week is a <strong>binary event</strong> (success/failure or secure/breached),</li>
+        <li>the sum of trials follows a <strong>Binomial distribution</strong>,</li>
+        <li>the LLN describes the convergence of empirical frequencies or normalized scores to their expectations.</li>
+      </ul>
 
-      <h3>4.2 Welford’s Algorithm (Mean + Variance)</h3>
-      <pre>
-n ← 0
-mu ← 0
-M2 ← 0
-for each new observation x:
-    n ← n + 1
-    delta  ← x - mu
-    mu     ← mu + delta / n
-    delta2 ← x - mu
-    M2     ← M2 + delta * delta2
+      <h2>5. Differences Between the Two Simulations</h2>
+      <p>
+        Despite the common structure, the simulations have different interpretations and random variables. The main
+        differences are summarised below.
+      </p>
 
-mean  = mu
-var_p = M2 / n           (population variance)
-var_s = M2 / (n - 1)     (sample variance, if n > 1)
-      </pre>
-
-      <h2>5. Comparison with the Batch Method</h2>
-      <table border="1" cellspacing="0" cellpadding="6" aria-label="Comparison Table">
+      <table border="1" cellspacing="0" cellpadding="6" aria-label="Comparison LLN vs random walk">
         <thead>
           <tr>
-            <th>Method</th>
-            <th>Requirements</th>
-            <th>Drawbacks</th>
-            <th>Advantages</th>
+            <th>Feature</th>
+            <th>Bernoulli LLN Simulation</th>
+            <th>Server Random Walk (HMWK 7)</th>
           </tr>
         </thead>
         <tbody>
           <tr>
-            <td>Batch (classic)</td>
-            <td>Full dataset stored in memory</td>
-            <td>Slow, risk of catastrophic cancellation, large memory</td>
-            <td>Simple to implement</td>
+            <td>Trial</td>
+            <td>One generic experiment with success/failure</td>
+            <td>One week of server activity</td>
           </tr>
           <tr>
-            <td>Online (Welford)</td>
-            <td>Only mean, M2, n</td>
-            <td>Requires recurrence understanding</td>
-            <td>Stable, fast, constant memory</td>
+            <td>Outcome space</td>
+            <td>\(\{0, 1\}\) (failure/success)</td>
+            <td>\(\{-1, +1\}\) (breached/secure)</td>
+          </tr>
+          <tr>
+            <td>Random variable</td>
+            <td>\(Y_i \sim \text{Bernoulli}(p)\)</td>
+            <td>\(X_i \sim \text{Bernoulli}(q)\) on \(\{-1,+1\}\)</td>
+          </tr>
+          <tr>
+            <td>Sum of trials</td>
+            <td>\(B_n = \sum Y_i \sim \text{Binomial}(n, p)\)</td>
+            <td>\(S_n = \sum X_i = n - 2B_n,\; B_n \sim \text{Binomial}(n, q)\)</td>
+          </tr>
+          <tr>
+            <td>Quantity of interest</td>
+            <td>\(\tfrac{B_n}{n}\): frequency of successes</td>
+            <td>\(\tfrac{S_n}{n}\): average trend of the server</td>
+          </tr>
+          <tr>
+            <td>LLN limit</td>
+            <td>\(\tfrac{B_n}{n} \to p\)</td>
+            <td>\(\tfrac{S_n}{n} \to 1 - 2q\)</td>
+          </tr>
+          <tr>
+            <td>Visualization</td>
+            <td>Convergence of sample mean to \(p\)</td>
+            <td>Random walk trajectories and histogram of final scores</td>
           </tr>
         </tbody>
       </table>
 
-      <h2>6. Step-by-step Example (Welford)</h2>
-      <p>Applying Welford’s algorithm to the dataset \([10, 13, 12, 11]\):</p>
-      <table border="1" cellspacing="0" cellpadding="6" aria-label="Step by Step Table">
-        <thead>
-          <tr>
-            <th>n</th>
-            <th>x</th>
-            <th>\(\delta\)</th>
-            <th>\(\bar{x}\)</th>
-            <th>\(M_2\)</th>
-            <th>Sample Variance</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr><td>1</td><td>10</td><td>10</td><td>10</td><td>0</td><td>–</td></tr>
-          <tr><td>2</td><td>13</td><td>3</td><td>11.5</td><td>4.5</td><td>4.5</td></tr>
-          <tr><td>3</td><td>12</td><td>0.5</td><td>11.67</td><td>4.67</td><td>2.33</td></tr>
-          <tr><td>4</td><td>11</td><td>-0.67</td><td>11.5</td><td>5.0</td><td>1.67</td></tr>
-        </tbody>
-      </table>
-
-      <h2>7. Conclusions</h2>
+      <h2>6. Binomial Coefficients and Pascal’s Triangle</h2>
+      <h3>6.1 Binomial Coefficients</h3>
       <p>
-        Recurrence formulas make it possible to efficiently compute mean and variance <strong>online</strong>, without storing past data.
-        Welford’s algorithm, in particular, ensures numerical robustness and eliminates problems such as propagation of rounding
-        errors and overflow.
+        In both simulations, the number of successes (or breaches) in \(n\) trials is a Binomial random variable. For the
+        server random walk, let \(B_n\) be the number of breached weeks:
+      </p>
+      <p>\[
+        B_n \sim \operatorname{Binomial}(n, q),
+      \]</p>
+      <p>
+        with probability mass function:
+      </p>
+      <p>\[
+        \mathbb{P}(B_n = k) = \binom{n}{k} q^k (1-q)^{n-k},
+        \quad k = 0, 1, \dots, n.
+      \]</p>
+      <p>
+        The binomial coefficient
+        \[
+          \binom{n}{k} = \frac{n!}{k!(n-k)!}
+        \]
+        counts how many sequences of length \(n\) contain exactly \(k\) breaches and \(n-k\) secure weeks. This is the
+        combinatorial backbone behind:
+      </p>
+      <ul>
+        <li>the histogram of the number of successes \(B_n\) in the LLN homework,</li>
+        <li>the histogram of final scores \(S_n = n - 2k\) in the random walk simulation.</li>
+      </ul>
+
+      <h3>6.2 Pascal’s Triangle (Tartaglia Triangle)</h3>
+      <p>
+        Pascal’s Triangle is a triangular array whose entries are precisely the binomial coefficients
+        \(\binom{n}{k}\). Each entry is the sum of the two entries above it:
+      </p>
+      <p>\[
+        \binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k},
+        \quad \binom{n}{0} = \binom{n}{n} = 1.
+      \]</p>
+      <p>
+        This recursive structure has a natural interpretation in terms of paths:
+      </p>
+      <ul>
+        <li>start at the top node (0 trials),</li>
+        <li>each step corresponds to adding a trial (or a week),</li>
+        <li>moving “down-left” can represent a breach (or a failure), while “down-right” represents a secure week (or a success),</li>
+        <li>after \(n\) steps, the number of ways to have exactly \(k\) breaches is \(\binom{n}{k}\).</li>
+      </ul>
+      <p>
+        Therefore, every cell in Pascal’s Triangle corresponds to the number of trajectories ending with a particular
+        configuration (number of successes or breaches) in our simulations.
+      </p>
+
+      <h2>7. Binomial Expansion and Probability</h2>
+      <p>
+        Pascal’s Triangle also encodes the coefficients of the <strong>Binomial Theorem</strong>:
+      </p>
+      <p>\[
+        (a + b)^n = \sum_{k=0}^n \binom{n}{k} a^{n-k} b^k.
+      \]</p>
+      <p>
+        In probabilistic terms, we can choose:
+      </p>
+      <p>\[
+        a = 1 - q \quad \text{(probability of a secure week)}, \qquad
+        b = q \quad \text{(probability of a breached week)}.
+      \]</p>
+      <p>
+        Then:
+      </p>
+      <p>\[
+        ( (1-q) + q )^n = \sum_{k=0}^n \binom{n}{k} (1-q)^{n-k} q^k = 1.
+      \]</p>
+      <p>
+        Each term
+      </p>
+      <p>\[
+        \binom{n}{k} (1-q)^{n-k} q^k
+      \]</p>
+      <p>
+        represents the probability that exactly \(k\) breaches occur in \(n\) weeks. In the LLN simulation we interpret this
+        as the probability of having \(k\) successes; in the random walk we map the same term to the final score:
+      </p>
+      <p>\[
+        S_n = n - 2k.
+      \]</p>
+      <p>
+        Numerically, when we build histograms from simulations, we are approximating the coefficients of this binomial
+        expansion via empirical frequencies.
+      </p>
+
+      <h2>8. Fibonacci Sequence and Constrained Paths</h2>
+      <p>
+        The combinatorial structure behind our simple \(\{0,1\}\) or \(\{-1,+1\}\) processes becomes even richer when we
+        introduce <strong>constraints</strong> on the allowed paths.
+      </p>
+      <ul>
+        <li>If we restrict the random walk so that it cannot go below a certain level (for example, we forbid more than one
+          breach in a row, or we do not allow the cumulative score to drop below zero), the number of admissible paths up
+          to step \(n\) often follows classical integer sequences.</li>
+      </ul>
+      <p>
+        Two important examples are:
+      </p>
+      <ul>
+        <li>
+          <strong>Fibonacci-like counts</strong>:
+          in some models where consecutive “down steps” are forbidden, the number of valid sequences of length \(n\)
+          satisfies a recurrence of the form
+          \[
+            F_{n} = F_{n-1} + F_{n-2},
+          \]
+          producing the Fibonacci sequence.
+        </li>
+        <li>
+          <strong>Catalan numbers</strong>:
+          if we consider paths that never cross below the starting level (so-called Dyck paths), the number of valid paths
+          with \(2n\) steps is given by the \(n\)-th Catalan number:
+          \[
+            C_n = \frac{1}{n+1}\binom{2n}{n}.
+          \]
+        </li>
+      </ul>
+      <p>
+        These connections show that even extremely simple local rules (binary steps) can generate rich families of
+        combinatorial objects, linking probability, number theory and discrete geometry.
+      </p>
+
+      <h2>9. Overall Conclusions</h2>
+      <p>
+        The Bernoulli LLN simulation and the server random walk from Homework 7 are two faces of the same underlying
+        structure: a sequence of independent Bernoulli trials. Both:
+      </p>
+      <ul>
+        <li>are governed by Binomial distributions,</li>
+        <li>have behaviour explained by the Law of Large Numbers,</li>
+        <li>are deeply linked to binomial coefficients, Pascal’s Triangle and the binomial expansion.</li>
+      </ul>
+      <p>
+        Moreover, when we place additional constraints on the trajectories, their counting connects to famous sequences such
+        as Fibonacci and Catalan numbers. This homework therefore emphasizes that:
+      </p>
+      <ul>
+        <li>simulations used in probability (LLN, random walks) are not isolated tricks,</li>
+        <li>they sit inside a larger combinatorial framework that unifies binomial coefficients, polynomial identities and
+          classical integer sequences.</li>
+      </ul>
+      <p>
+        In summary, a simple Bernoulli process provides a common language between random experiments, security models and
+        combinatorial mathematics.
       </p>
 
       <a class="button" href="../../index.html">⬅ Back to Home</a>
@@ -155,7 +355,7 @@ var_s = M2 / (n - 1)     (sample variance, if n > 1)
   </main>
 
   <footer>
-    <small>© 2025 — Homework 6 by Antonio Elia (2253126)</small>
+    <small>© 2025 — Homework 8 by Antonio Elia (2253126)</small>
   </footer>
 
 </body>
