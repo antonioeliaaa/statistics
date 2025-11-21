@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="color-scheme" content="light" />
-  <title>Homework 8 — Bernoulli Processes, Random Walks & Combinatorics</title>
+  <title>Homework 10 — Poisson Counting Process Simulation</title>
 
   <!-- Global stylesheet -->
   <link rel="stylesheet" href="../../style.css" />
@@ -17,337 +17,255 @@
 
   <header>
     <h1>Statistics — Antonio Elia</h1>
-    <p>Homework 8 — Student ID: 2253126</p>
+    <p>Homework 10 — Student ID: 2253126</p>
   </header>
 
   <main>
     <section>
 
-      <h2>1. Context and Goal</h2>
+      <h2>1. Problem Description</h2>
       <p>
-        This homework is conceptually connected to two previous activities:
+        In this homework we simulate a <strong>counting process</strong> over a time interval \([0, T]\) (for example \(T = 1\)),
+        where events (“successes”) occur independently and uniformly in time at a constant average rate \(\lambda\).
+      </p>
+      <p>
+        The interval is approximated by dividing \([0, T]\) into \(n\) small subintervals and, in each subinterval,
+        generating an event with probability approximately \(\lambda \Delta t\), where \(\Delta t = T/n\). 
+        For \(T = 1\) this corresponds to a probability \(\lambda / n\) per subinterval, as specified in the assignment.
+      </p>
+      <p>
+        The aims are:
       </p>
       <ul>
-        <li>the simulation of a <strong>Bernoulli process</strong> and the Law of Large Numbers (LLN),</li>
-        <li>the simulation of a <strong>server security random walk</strong> (Homework 7), where weekly outcomes are
-          \((+1)\) for secure and \((-1)\) for breached weeks.</li>
+        <li>to simulate the resulting counting process numerically,</li>
+        <li>to identify what <strong>stochastic process</strong> it approximates,</li>
+        <li>to discuss its theoretical properties,</li>
+        <li>to interpret the meaning of the rate parameter \(\lambda\).</li>
       </ul>
+
+      <h2>2. Discrete Approximation Scheme</h2>
       <p>
-        The aim of this homework is to:
+        Consider the time interval \([0, T]\), divided into \(n\) subintervals of equal length:
+      </p>
+      <p>\[
+        \Delta t = \frac{T}{n}.
+      \]</p>
+      <p>
+        On each subinterval we generate at most one event, independently of the others. 
+        The idea is:
       </p>
       <ul>
-        <li>discuss analogies and differences between the simple Bernoulli LLN simulation and the server random walk,</li>
-        <li>highlight how both are based on the same probabilistic structure,</li>
-        <li>illustrate the relationships with <strong>binomial coefficients</strong>, <strong>Pascal’s triangle</strong>,
-          <strong>binomial expansion</strong>, the <strong>Fibonacci sequence</strong> and related
-          <strong>combinatorial coefficients</strong>.</li>
+        <li>for the \(k\)-th subinterval, we define a Bernoulli random variable:
+          \[
+            Y_k =
+            \begin{cases}
+              1, & \text{if an event occurs in subinterval } k, \\
+              0, & \text{otherwise},
+            \end{cases}
+          \]
+        </li>
+        <li>with probability
+          \[
+            \mathbb{P}(Y_k = 1) \approx \lambda \Delta t.
+          \]
+          For \(T = 1\) and \(\Delta t = 1/n\), this is exactly \(\lambda / n\), as in the homework statement.</li>
       </ul>
+      <p>
+        The (discrete) counting process at time \(t_j = j\Delta t\) is:
+      </p>
+      <p>\[
+        N_n(t_j) = \sum_{k=1}^{j} Y_k, \quad j = 0, 1, \dots, n.
+      \]</p>
+      <p>
+        In particular, the total number of events over \([0, T]\) is:
+      </p>
+      <p>\[
+        N_n(T) = \sum_{k=1}^{n} Y_k \sim \operatorname{Binomial}\!\left(n, \lambda\Delta t\right)
+        = \operatorname{Binomial}\!\left(n, \frac{\lambda T}{n}\right).
+      \]</p>
+      <p>
+        As \(n \to \infty\) (and thus \(\Delta t \to 0\)), the Binomial distribution converges to a Poisson distribution:
+      </p>
+      <p>\[
+        N_n(T) \xrightarrow[n\to\infty]{d} \operatorname{Poisson}(\lambda T).
+      \]</p>
 
-      <h2>2. Bernoulli Process and Law of Large Numbers</h2>
+      <h2>3. Identification of the Limit Process</h2>
       <p>
-        In the LLN homework, we considered a sequence of independent Bernoulli trials:
-      </p>
-      <p>\[
-        Y_1, Y_2, \dots, Y_n,\quad Y_i \sim \text{Bernoulli}(p),
-      \]</p>
-      <p>
-        where each trial represents a <em>success</em> (1) with probability \(p\) and a <em>failure</em> (0) with
-        probability \(1-p\).
-      </p>
-      <p>
-        The cumulative number of successes after \(n\) trials is:
-      </p>
-      <p>\[
-        B_n = \sum_{i=1}^n Y_i,
-      \]</p>
-      <p>
-        and the sample mean is:
-      </p>
-      <p>\[
-        \bar{Y}_n = \frac{B_n}{n}.
-      \]</p>
-      <p>
-        The <strong>Law of Large Numbers</strong> states that:
-      </p>
-      <p>\[
-        \bar{Y}_n \xrightarrow[n \to \infty]{} p
-      \]</p>
-      <p>
-        i.e. the empirical frequency of successes converges to the true probability \(p\) as the number of trials grows.
-      </p>
-
-      <h2>3. Server Random Walk (Homework 7) as a Bernoulli Process</h2>
-      <p>
-        In Homework 7, we modelled the weekly status of a server under attack. For each week \(i\) we defined a random
-        variable:
-      </p>
-      <p>\[
-        X_i =
-        \begin{cases}
-          +1, & \text{if the server remains secure in week } i, \\
-          -1, & \text{if the server is breached in week } i.
-        \end{cases}
-      \]</p>
-      <p>
-        Assuming independence between weeks, we have:
-      </p>
-      <p>\[
-        \mathbb{P}(X_i = -1) = q, \quad \mathbb{P}(X_i = +1) = 1 - q,
-      \]</p>
-      <p>
-        where the effective weekly breach probability is:
-      </p>
-      <p>\[
-        q = 1 - (1 - p)^m,
-      \]</p>
-      <p>
-        with \(p\) the breach probability of a single attacker and \(m\) the number of attackers.
-      </p>
-      <p>
-        The cumulative score after \(n\) weeks is the random walk:
-      </p>
-      <p>\[
-        S_n = \sum_{i=1}^n X_i.
-      \]</p>
-      <p>
-        Let \(B_n\) be the number of breached weeks (i.e. the number of times \(X_i = -1\)) over \(n\) weeks. Then:
-      </p>
-      <p>\[
-        B_n \sim \text{Binomial}(n, q), \qquad
-        S_n = n - 2B_n,
-      \]</p>
-      <p>
-        so the random walk is just a transformed Binomial variable. The LLN appears again in the limit:
-      </p>
-      <p>\[
-        \frac{S_n}{n} = \frac{n - 2B_n}{n} = 1 - 2\frac{B_n}{n}
-        \xrightarrow[n \to \infty]{} 1 - 2q
-      \]</p>
-      <p>
-        because \( \tfrac{B_n}{n} \to q \) by the LLN for Bernoulli trials.
-      </p>
-
-      <h2>4. Analogies Between the Two Simulations</h2>
-      <p>
-        Both the Bernoulli LLN experiment and the server random walk are built on the same core ingredients:
+        The limiting object of this construction is the <strong>Poisson counting process</strong> with rate \(\lambda\),
+        usually denoted by \((N(t))_{t \ge 0}\), defined by the properties:
       </p>
       <ul>
-        <li>a sequence of independent Bernoulli trials,</li>
-        <li>a Binomial distribution obtained by summing these trials,</li>
-        <li>an empirical quantity (mean or normalized sum) that converges to a deterministic limit.</li>
+        <li>\(N(0) = 0\) almost surely;</li>
+        <li>\(N(t)\) has <strong>independent increments</strong>:
+          for any disjoint time intervals, increments are independent random variables;</li>
+        <li>\(N(t)\) has <strong>stationary increments</strong>:
+          the distribution of \(N(t+s) - N(s)\) depends only on the length \(t\), not on \(s\);</li>
+        <li>
+          for each \(t \ge 0\),
+          \[
+            N(t) \sim \operatorname{Poisson}(\lambda t);
+          \]
+        </li>
+        <li>paths are almost surely non-decreasing, integer-valued, right-continuous step functions.</li>
       </ul>
       <p>
-        In both cases:
+        Our discrete simulation with \(n\) subintervals and Bernoulli events is a <em>time-discretised approximation</em> of this process.
+        As \(n\) increases:
       </p>
       <ul>
-        <li>each trial/week is a <strong>binary event</strong> (success/failure or secure/breached),</li>
-        <li>the sum of trials follows a <strong>Binomial distribution</strong>,</li>
-        <li>the LLN describes the convergence of empirical frequencies or normalized scores to their expectations.</li>
+        <li>the distribution of \(N_n(T)\) approaches \(\operatorname{Poisson}(\lambda T)\);</li>
+        <li>the sample paths of \(N_n(t)\) converge (in a suitable sense) to the typical sample paths of a Poisson process.</li>
       </ul>
 
-      <h2>5. Differences Between the Two Simulations</h2>
-      <p>
-        Despite the common structure, the simulations have different interpretations and random variables. The main
-        differences are summarised below.
-      </p>
+      <h2>4. Theoretical Properties of the Poisson Counting Process</h2>
 
-      <table border="1" cellspacing="0" cellpadding="6" aria-label="Comparison LLN vs random walk">
-        <thead>
-          <tr>
-            <th>Feature</th>
-            <th>Bernoulli LLN Simulation</th>
-            <th>Server Random Walk (HMWK 7)</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td>Trial</td>
-            <td>One generic experiment with success/failure</td>
-            <td>One week of server activity</td>
-          </tr>
-          <tr>
-            <td>Outcome space</td>
-            <td>\(\{0, 1\}\) (failure/success)</td>
-            <td>\(\{-1, +1\}\) (breached/secure)</td>
-          </tr>
-          <tr>
-            <td>Random variable</td>
-            <td>\(Y_i \sim \text{Bernoulli}(p)\)</td>
-            <td>\(X_i \sim \text{Bernoulli}(q)\) on \(\{-1,+1\}\)</td>
-          </tr>
-          <tr>
-            <td>Sum of trials</td>
-            <td>\(B_n = \sum Y_i \sim \text{Binomial}(n, p)\)</td>
-            <td>\(S_n = \sum X_i = n - 2B_n,\; B_n \sim \text{Binomial}(n, q)\)</td>
-          </tr>
-          <tr>
-            <td>Quantity of interest</td>
-            <td>\(\tfrac{B_n}{n}\): frequency of successes</td>
-            <td>\(\tfrac{S_n}{n}\): average trend of the server</td>
-          </tr>
-          <tr>
-            <td>LLN limit</td>
-            <td>\(\tfrac{B_n}{n} \to p\)</td>
-            <td>\(\tfrac{S_n}{n} \to 1 - 2q\)</td>
-          </tr>
-          <tr>
-            <td>Visualization</td>
-            <td>Convergence of sample mean to \(p\)</td>
-            <td>Random walk trajectories and histogram of final scores</td>
-          </tr>
-        </tbody>
-      </table>
+      <h3>4.1 Distribution of Counts</h3>
+      <p>
+        For a Poisson process \((N(t))_{t\ge0}\) with rate \(\lambda\):
+      </p>
+      <p>\[
+        N(t) \sim \operatorname{Poisson}(\lambda t),
+      \]</p>
+      <p>
+        i.e.:
+      </p>
+      <p>\[
+        \mathbb{P}(N(t) = k)
+        = e^{-\lambda t} \frac{(\lambda t)^k}{k!},
+        \quad k = 0, 1, 2, \dots
+      \]</p>
+      <p>
+        The mean and variance of \(N(t)\) are:
+      </p>
+      <p>\[
+        \mathbb{E}[N(t)] = \lambda t,
+        \qquad
+        \operatorname{Var}(N(t)) = \lambda t.
+      \]</p>
 
-      <h2>6. Binomial Coefficients and Pascal’s Triangle</h2>
-      <h3>6.1 Binomial Coefficients</h3>
+      <h3>4.2 Independent and Stationary Increments</h3>
       <p>
-        In both simulations, the number of successes (or breaches) in \(n\) trials is a Binomial random variable. For the
-        server random walk, let \(B_n\) be the number of breached weeks:
+        For \(0 \le t_0 &lt; t_1 &lt; \dots &lt; t_k\), the increments:
       </p>
       <p>\[
-        B_n \sim \operatorname{Binomial}(n, q),
+        N(t_1) - N(t_0),\,
+        N(t_2) - N(t_1),\, \dots,\,
+        N(t_k) - N(t_{k-1})
       \]</p>
       <p>
-        with probability mass function:
+        are independent random variables and:
       </p>
       <p>\[
-        \mathbb{P}(B_n = k) = \binom{n}{k} q^k (1-q)^{n-k},
-        \quad k = 0, 1, \dots, n.
+        N(t_j) - N(t_{j-1}) \sim \operatorname{Poisson}(\lambda (t_j - t_{j-1})).
       \]</p>
       <p>
-        The binomial coefficient
-        \[
-          \binom{n}{k} = \frac{n!}{k!(n-k)!}
-        \]
-        counts how many sequences of length \(n\) contain exactly \(k\) breaches and \(n-k\) secure weeks. This is the
-        combinatorial backbone behind:
-      </p>
-      <ul>
-        <li>the histogram of the number of successes \(B_n\) in the LLN homework,</li>
-        <li>the histogram of final scores \(S_n = n - 2k\) in the random walk simulation.</li>
-      </ul>
+        This reflects the idea of events occurring in time in a “memoryless” way with constant average rate.
 
-      <h3>6.2 Pascal’s Triangle (Tartaglia Triangle)</h3>
+      <h3>4.3 Interarrival Times</h3>
       <p>
-        Pascal’s Triangle is a triangular array whose entries are precisely the binomial coefficients
-        \(\binom{n}{k}\). Each entry is the sum of the two entries above it:
-      </p>
-      <p>\[
-        \binom{n}{k} = \binom{n-1}{k-1} + \binom{n-1}{k},
-        \quad \binom{n}{0} = \binom{n}{n} = 1.
-      \]</p>
-      <p>
-        This recursive structure has a natural interpretation in terms of paths:
-      </p>
-      <ul>
-        <li>start at the top node (0 trials),</li>
-        <li>each step corresponds to adding a trial (or a week),</li>
-        <li>moving “down-left” can represent a breach (or a failure), while “down-right” represents a secure week (or a success),</li>
-        <li>after \(n\) steps, the number of ways to have exactly \(k\) breaches is \(\binom{n}{k}\).</li>
-      </ul>
-      <p>
-        Therefore, every cell in Pascal’s Triangle corresponds to the number of trajectories ending with a particular
-        configuration (number of successes or breaches) in our simulations.
-      </p>
-
-      <h2>7. Binomial Expansion and Probability</h2>
-      <p>
-        Pascal’s Triangle also encodes the coefficients of the <strong>Binomial Theorem</strong>:
-      </p>
-      <p>\[
-        (a + b)^n = \sum_{k=0}^n \binom{n}{k} a^{n-k} b^k.
-      \]</p>
-      <p>
-        In probabilistic terms, we can choose:
-      </p>
-      <p>\[
-        a = 1 - q \quad \text{(probability of a secure week)}, \qquad
-        b = q \quad \text{(probability of a breached week)}.
-      \]</p>
-      <p>
+        Let \(T_1\) be the time of the first event, and \(T_2\) the time between the first and second event, etc. 
         Then:
       </p>
       <p>\[
-        ( (1-q) + q )^n = \sum_{k=0}^n \binom{n}{k} (1-q)^{n-k} q^k = 1.
+        T_1, T_2, \dots \text{ are i.i.d. } \sim \operatorname{Exponential}(\lambda)
       \]</p>
       <p>
-        Each term
+        with density:
       </p>
       <p>\[
-        \binom{n}{k} (1-q)^{n-k} q^k
+        f_{T}(t) = \lambda e^{-\lambda t}, \quad t \ge 0.
       \]</p>
       <p>
-        represents the probability that exactly \(k\) breaches occur in \(n\) weeks. In the LLN simulation we interpret this
-        as the probability of having \(k\) successes; in the random walk we map the same term to the final score:
-      </p>
-      <p>\[
-        S_n = n - 2k.
-      \]</p>
-      <p>
-        Numerically, when we build histograms from simulations, we are approximating the coefficients of this binomial
-        expansion via empirical frequencies.
-      </p>
+        Therefore, the Poisson process can also be viewed as the process obtained by summing independent exponential waiting times.
 
-      <h2>8. Fibonacci Sequence and Constrained Paths</h2>
+      <h2>5. Interpretation of the Rate Parameter \(\lambda\)</h2>
       <p>
-        The combinatorial structure behind our simple \(\{0,1\}\) or \(\{-1,+1\}\) processes becomes even richer when we
-        introduce <strong>constraints</strong> on the allowed paths.
+        The parameter \(\lambda &gt; 0\) is called the <strong>rate</strong> of the process. It has several equivalent interpretations:
       </p>
       <ul>
-        <li>If we restrict the random walk so that it cannot go below a certain level (for example, we forbid more than one
-          breach in a row, or we do not allow the cumulative score to drop below zero), the number of admissible paths up
-          to step \(n\) often follows classical integer sequences.</li>
-      </ul>
-      <p>
-        Two important examples are:
-      </p>
-      <ul>
-        <li>
-          <strong>Fibonacci-like counts</strong>:
-          in some models where consecutive “down steps” are forbidden, the number of valid sequences of length \(n\)
-          satisfies a recurrence of the form
+        <li>Average number of events per unit time:
           \[
-            F_{n} = F_{n-1} + F_{n-2},
+            \mathbb{E}[N(1)] = \lambda.
           \]
-          producing the Fibonacci sequence.
-        </li>
+          For a generic interval \([0, t]\), the expected number of events is \(\lambda t\).</li>
         <li>
-          <strong>Catalan numbers</strong>:
-          if we consider paths that never cross below the starting level (so-called Dyck paths), the number of valid paths
-          with \(2n\) steps is given by the \(n\)-th Catalan number:
+          Reciprocal of the mean interarrival time:
+          since \(T_1 \sim \operatorname{Exponential}(\lambda)\),
           \[
-            C_n = \frac{1}{n+1}\binom{2n}{n}.
+            \mathbb{E}[T_1] = \frac{1}{\lambda},
+          \]
+          so the typical waiting time between successive events is approximately \(1/\lambda\).</li>
+        <li>
+          In the discrete approximation, the rate \(\lambda\) is the limit:
+          \[
+            \lambda = \lim_{\Delta t \to 0} \frac{\mathbb{P}(\text{one event in an interval of length } \Delta t)}{\Delta t}.
           \]
         </li>
       </ul>
       <p>
-        These connections show that even extremely simple local rules (binary steps) can generate rich families of
-        combinatorial objects, linking probability, number theory and discrete geometry.
+        Intuitively, a larger \(\lambda\) corresponds to a more “crowded” process (events happen more frequently), while a smaller
+        \(\lambda\) corresponds to a sparser process.
+
+      <h2>6. Interactive Simulation</h2>
+      <p>
+        The following panel simulates the counting process on \([0, T]\) by:
+      </p>
+      <ul>
+        <li>dividing the interval into \(n\) subintervals of length \(\Delta t = T/n\);</li>
+        <li>in each subinterval, generating an event with probability \(p \approx \lambda \Delta t\);</li>
+        <li>constructing the sample path \(N_n(t_j)\) for one trajectory;</li>
+        <li>repeating the experiment for many trials to build the empirical distribution of \(N_n(T)\);</li>
+        <li>comparing the histogram of \(N_n(T)\) with the theoretical Poisson\((\lambda T)\) distribution.</li>
+      </ul>
+
+      <div class="controls">
+        <p>
+          <label for="lambda"><strong>Rate (λ):</strong></label>
+          <input id="lambda" type="number" min="0" step="0.1" value="5" />
+        </p>
+
+        <p>
+          <label for="T"><strong>Time horizon (T):</strong></label>
+          <input id="T" type="number" min="0.1" step="0.1" value="1" />
+        </p>
+
+        <p>
+          <label for="n"><strong>Subintervals (n):</strong></label>
+          <input id="n" type="number" min="10" step="10" value="5000" />
+        </p>
+
+        <p>
+          <label for="trials"><strong>Number of trajectories:</strong></label>
+          <input id="trials" type="number" min="1" value="2000" />
+        </p>
+
+        <button id="simulateButton">Simulate</button>
+      </div>
+
+      <p id="p-info"></p>
+
+      <h3>6.1 Sample Path of the Counting Process</h3>
+      <p>
+        The chart below shows one realisation of the counting process \(N_n(t)\) on \([0, T]\). 
+        It is a non-decreasing step function starting at 0: each jump corresponds to an event.
       </p>
 
-      <h2>9. Overall Conclusions</h2>
+      <canvas id="pathChart"></canvas>
+
+      <h3>6.2 Distribution of the Total Number of Events</h3>
       <p>
-        The Bernoulli LLN simulation and the server random walk from Homework 7 are two faces of the same underlying
-        structure: a sequence of independent Bernoulli trials. Both:
+        The next chart compares:
       </p>
       <ul>
-        <li>are governed by Binomial distributions,</li>
-        <li>have behaviour explained by the Law of Large Numbers,</li>
-        <li>are deeply linked to binomial coefficients, Pascal’s Triangle and the binomial expansion.</li>
+        <li>the empirical distribution of the total number of events \(N_n(T)\) over all simulated trajectories (bars),</li>
+        <li>the theoretical Poisson\((\lambda T)\) probabilities (line).</li>
       </ul>
       <p>
-        Moreover, when we place additional constraints on the trajectories, their counting connects to famous sequences such
-        as Fibonacci and Catalan numbers. This homework therefore emphasizes that:
+        As \(n\) and the number of trajectories increase, the empirical distribution converges to the Poisson distribution.
       </p>
-      <ul>
-        <li>simulations used in probability (LLN, random walks) are not isolated tricks,</li>
-        <li>they sit inside a larger combinatorial framework that unifies binomial coefficients, polynomial identities and
-          classical integer sequences.</li>
-      </ul>
-      <p>
-        In summary, a simple Bernoulli process provides a common language between random experiments, security models and
-        combinatorial mathematics.
-      </p>
+
+      <canvas id="histChart"></canvas>
 
       <a class="button" href="../../index.html">⬅ Back to Home</a>
 
@@ -355,8 +273,220 @@
   </main>
 
   <footer>
-    <small>© 2025 — Homework 8 by Antonio Elia (2253126)</small>
+    <small>© 2025 — Homework 10 by Antonio Elia (2253126)</small>
   </footer>
+
+  <!-- Chart.js for plots -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    const lambdaInput = document.getElementById('lambda');
+    const TInput = document.getElementById('T');
+    const nInput = document.getElementById('n');
+    const trialsInput = document.getElementById('trials');
+    const simulateButton = document.getElementById('simulateButton');
+    const pInfo = document.getElementById('p-info');
+
+    const pathCanvas = document.getElementById('pathChart');
+    const histCanvas = document.getElementById('histChart');
+
+    let pathChart = null;
+    let histChart = null;
+
+    function simulateCountingProcess(lambda, T, n, trials) {
+      const dt = T / n;
+      const p = Math.min(lambda * dt, 1); // event probability per subinterval
+      const counts = new Array(trials);
+      const timeGrid = [];
+      const path = [];
+
+      for (let j = 0; j <= n; j++) {
+        timeGrid.push(j * dt);
+      }
+
+      // simulate one sample path for plotting
+      let N = 0;
+      path.push(0);
+      for (let j = 1; j <= n; j++) {
+        if (Math.random() < p) {
+          N++;
+        }
+        path.push(N);
+      }
+
+      // simulate many trajectories for histogram
+      for (let t = 0; t < trials; t++) {
+        let count = 0;
+        for (let j = 0; j < n; j++) {
+          if (Math.random() < p) {
+            count++;
+          }
+        }
+        counts[t] = count;
+      }
+
+      return { dt, p, timeGrid, path, counts };
+    }
+
+    function poissonPMF(k, mu) {
+      if (k < 0) return 0;
+      // compute e^{-mu} mu^k / k! using recurrence for stability
+      let res = Math.exp(-mu);
+      let term = res; // k=0 term
+      if (k === 0) return term;
+      for (let i = 1; i <= k; i++) {
+        term *= mu / i;
+      }
+      return term;
+    }
+
+    function buildHistogram(counts, mu) {
+      const maxObserved = counts.reduce((a, b) => Math.max(a, b), 0);
+      const suggestedMax = Math.ceil(mu + 4 * Math.sqrt(mu));
+      const maxK = Math.max(0, Math.min(Math.max(maxObserved, suggestedMax), 40));
+
+      const freq = new Array(maxK + 1).fill(0);
+      counts.forEach(c => {
+        if (c <= maxK) {
+          freq[c]++;
+        }
+      });
+
+      const total = counts.length;
+      const empirical = freq.map(f => f / total);
+      const theoretical = [];
+      for (let k = 0; k <= maxK; k++) {
+        theoretical.push(poissonPMF(k, mu));
+      }
+
+      const labels = [];
+      for (let k = 0; k <= maxK; k++) labels.push(k.toString());
+
+      return { labels, empirical, theoretical };
+    }
+
+    function updatePathChart(timeGrid, path) {
+      if (pathChart) {
+        pathChart.destroy();
+      }
+
+      pathChart = new Chart(pathCanvas, {
+        type: 'line',
+        data: {
+          labels: timeGrid,
+          datasets: [
+            {
+              label: 'Sample path N(t)',
+              data: path,
+              stepped: true,
+              fill: false
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'Time t'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'N(t)'
+              },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function updateHistChart(labels, empirical, theoretical) {
+      if (histChart) {
+        histChart.destroy();
+      }
+
+      histChart = new Chart(histCanvas, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Empirical P(N(T) = k)',
+              data: empirical
+            },
+            {
+              type: 'line',
+              label: 'Poisson(λT) theoretical',
+              data: theoretical
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: {
+              title: {
+                display: true,
+                text: 'k = number of events in [0, T]'
+              }
+            },
+            y: {
+              title: {
+                display: true,
+                text: 'Probability'
+              },
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    function runSimulation() {
+      const lambda = parseFloat(lambdaInput.value);
+      const T = parseFloat(TInput.value);
+      const n = parseInt(nInput.value, 10);
+      const trials = parseInt(trialsInput.value, 10);
+
+      if (!Number.isFinite(lambda) || lambda < 0) {
+        alert('λ must be a non-negative number.');
+        return;
+      }
+      if (!Number.isFinite(T) || T <= 0) {
+        alert('T must be a positive number.');
+        return;
+      }
+      if (!Number.isFinite(n) || n <= 0) {
+        alert('n must be a positive integer.');
+        return;
+      }
+      if (!Number.isFinite(trials) || trials <= 0) {
+        alert('Number of trajectories must be positive.');
+        return;
+      }
+
+      const { dt, p, timeGrid, path, counts } = simulateCountingProcess(lambda, T, n, trials);
+      const mu = lambda * T;
+      const { labels, empirical, theoretical } = buildHistogram(counts, mu);
+
+      pInfo.textContent =
+        'Δt = ' + dt.toExponential(3) +
+        ',  event probability per subinterval ≈ λΔt = ' + p.toFixed(5) +
+        ',  expected count μ = λT = ' + mu.toFixed(2);
+
+      updatePathChart(timeGrid, path);
+      updateHistChart(labels, empirical, theoretical);
+    }
+
+    simulateButton.addEventListener('click', runSimulation);
+
+    // initial run
+    runSimulation();
+  </script>
 
 </body>
 </html>
